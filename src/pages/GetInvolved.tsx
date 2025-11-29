@@ -212,8 +212,8 @@ export default function GetInvolved() {
                     <Mail className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-semibold mb-1">Email</p>
-                      <a href="mailto:hello@solvebridge.africa" className="text-sm text-primary hover:underline">
-                        hello@solvebridge.africa
+                      <a href="mailto:solvebridgeafrica@gmail.com" className="text-sm text-primary hover:underline">
+                        solvebridgeafrica@gmail.com
                       </a>
                     </div>
                   </div>
@@ -221,7 +221,7 @@ export default function GetInvolved() {
                     <Phone className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-semibold mb-1">Phone</p>
-                      <p className="text-sm text-muted-foreground">+254 7XX XXX XXX</p>
+                      <p className="text-sm text-muted-foreground">+254 702660246</p>
                     </div>
                   </div>
                 </CardContent>
