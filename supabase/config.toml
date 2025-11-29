@@ -1,0 +1,13 @@
+project_id = "bjopxnhflygppvxvmmtz"
+
+[functions.send-moderator-notification]
+verify_jwt = true
+
+[functions.send-partner-notification]
+verify_jwt = true
+
+[functions.send-impact-report]
+verify_jwt = true
+
+[functions.solve-ai-chat]
+verify_jwt = false
