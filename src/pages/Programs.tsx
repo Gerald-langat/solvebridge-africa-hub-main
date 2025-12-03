@@ -23,13 +23,15 @@ const programs = [
     icon: FlaskConical,
     title: "MVP Validation Labs",
     description: "Rapid-testing spaces where innovators prototype, receive user feedback, and measure early impact before scaling.",
-    color: "from-accent/20 to-accent/10"
+    color: "from-accent/20 to-accent/10",
+    link: "/MVP_Validation"
   },
   {
     icon: Heart,
     title: "Women & Youth Empowerment",
     description: "We prioritize capacity-building, leadership, and funding access for women- and youth-led innovations.",
-    color: "from-primary/20 to-secondary/10"
+    color: "from-primary/20 to-secondary/10",
+    link: "/WomenYouth"
   }
 ];
 
@@ -60,34 +62,42 @@ export default function Programs() {
       <section className="py-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {programs.map((program, index) => (
-              <Card 
-                key={index} 
-                className="group hover:shadow-elegant transition-all duration-500 hover:-translate-y-2 overflow-hidden border-primary/20"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${program.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                <CardHeader className="relative">
-                  <div className="w-16 h-16 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <program.icon className="w-8 h-8 text-primary-foreground" />
-                  </div>
-                  <CardTitle className="text-2xl group-hover:text-primary transition-colors">
-                    {program.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="relative">
-                  <CardDescription className="text-base mb-4 leading-relaxed">
-                    {program.description}
-                  </CardDescription>
-                  <Button 
-                    variant="ghost" 
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-primary hover:text-primary"
-                  >
-                    Learn More
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+           {programs.map((program, index) => (
+  <Card 
+    key={index} 
+    className="group hover:shadow-elegant transition-all duration-500 hover:-translate-y-2 overflow-hidden border-primary/20"
+  >
+    <div className={`absolute inset-0 bg-gradient-to-br ${program.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+    
+    <CardHeader className="relative">
+      <div className="w-16 h-16 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+        <program.icon className="w-8 h-8 text-primary-foreground" />
+      </div>
+      <CardTitle className="text-2xl group-hover:text-primary transition-colors">
+        {program.title}
+      </CardTitle>
+    </CardHeader>
+
+    <CardContent className="relative">
+      <CardDescription className="text-base mb-4 leading-relaxed">
+        {program.description}
+      </CardDescription>
+
+      {program.link && (
+        <Link to ={program.link}>
+          <Button 
+            variant="ghost"                 
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-primary hover:text-primary"
+          >
+            Learn More
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        </Link>
+      )}
+    </CardContent>
+  </Card>
+))}
+
           </div>
         </div>
       </section>

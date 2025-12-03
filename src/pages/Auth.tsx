@@ -58,40 +58,55 @@ export default function Auth() {
   };
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  e.preventDefault();
+  setIsLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            role: role,
-          },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: signupEmail,
+      password: signupPassword,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
         },
-      });
+      },
+    });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      toast({
-        title: "Account created!",
-        description: "Welcome to SolveBridge Africa.",
-      });
-      navigate("/dashboard");
-    } catch (error: any) {
-      toast({
-        title: "Signup failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    const user = data.user;  // ✅ Get user directly
+
+    if (user) {
+      await supabase.from("profiles").insert([
+        {
+          id: user.id,
+          first_name: firstName,
+          last_name: lastName,
+          email: signupEmail,
+          role: role
+        },
+      ]);
     }
-  };
+
+    toast({
+      title: "Account created!",
+      description: "Welcome to SolveBridge Africa.",
+    });
+
+    navigate("/dashboard");
+
+  } catch (error: any) {
+    toast({
+      title: "Signup failed",
+      description: error.message,
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background/95 to-primary/5 p-4">

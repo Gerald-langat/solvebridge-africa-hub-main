@@ -15,7 +15,7 @@ export const SuccessStories = () => {
     },
     {
       quote: "Through the MVP Validation Labs, I refined my agricultural solution and secured $50K in seed funding within 6 months.",
-      name: "James Kimani",
+      name: "Rogers Wambua",
       role: "CEO, FarmTech Solutions",
       country: "Kenya",
       impact: "$50K funding secured",
@@ -23,7 +23,7 @@ export const SuccessStories = () => {
     },
     {
       quote: "As a young woman founder, the mentorship and resources I received were transformative. I'm now scaling across three countries.",
-      name: "Zara Hassan",
+      name: "Eve Wanja",
       role: "Founder, EduBridge",
       country: "Ghana",
       impact: "3 countries, 10K+ users",

@@ -27,7 +27,7 @@ const problemSchema = z.object({
   description: z.string().min(50, "Description must be at least 50 characters").max(800, "Description must be less than 800 characters"),
   sector: z.string().min(1, "Please select a category"),
   location: z.string().min(2, "Location is required").max(100, "Location must be less than 100 characters"),
-  target_audience: z.string().min(10, "Target audience must be at least 10 characters").max(500, "Target audience must be less than 500 characters"),
+  target_audience: z.string().min(2, "Target audience must be at least 10 characters").max(500, "Target audience must be less than 500 characters"),
   impact_scale: z.string().min(1, "Please select an impact scale"),
   stakeholders: z.string().max(500, "Stakeholders must be less than 500 characters").optional(),
   image_url: z.string().url("Invalid URL format").optional().or(z.literal("")),

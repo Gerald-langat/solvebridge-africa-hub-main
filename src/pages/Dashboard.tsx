@@ -18,6 +18,7 @@ export default function Dashboard() {
     impactScore: 0,
   });
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -28,10 +29,16 @@ export default function Dashboard() {
   }, [user]);
 
   const fetchProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-      
-    setProfile(user?.user_metadata || null);
+    setLoaded(true);
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user?.id)
+      .single();
+    setProfile(data);
+    setLoaded(false);
   };
+
 
   const fetchStats = async () => {
     const { data: problems } = await supabase
@@ -92,7 +99,7 @@ export default function Dashboard() {
           {/* Welcome Header */}
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              Welcome, {profile?.first_name || "Innovator"} 👋
+              Welcome, {loaded ? "..." : profile?.first_name} 👋
             </h1>
             <p className="text-muted-foreground text-lg">
               Here's your progress so far
@@ -137,7 +144,7 @@ export default function Dashboard() {
                   <Users className="text-secondary" size={24} />
                 </div>
               </div>
-              <div className="text-3xl font-bold mb-1">{profile?.role || "Innovator"}</div>
+              <div className="2xl:text-3xl font-bold mb-1">{loaded ? "..." : profile?.role}</div>
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>
@@ -147,7 +154,7 @@ export default function Dashboard() {
             <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" asChild className="flex-1">
-                <Link to="/dashboard/submit">
+                <Link to="/submit-problem">
                   <PlusCircle className="mr-2" size={20} />
                   Submit a Problem
                 </Link>

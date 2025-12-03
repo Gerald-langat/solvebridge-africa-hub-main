@@ -72,7 +72,7 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-background/80">
               <li>Nairobi, Kenya</li>
-              <li>hello@solvebridge.africa</li>
+              <li>solvebridgeafrica@gmail.com</li>
               <li>+254 702660246</li>
             </ul>
           </div>

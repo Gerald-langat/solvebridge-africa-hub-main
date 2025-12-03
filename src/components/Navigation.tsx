@@ -22,12 +22,12 @@ export const Navigation = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <img src="/logo.jpg" alt="Logo" className="h-8 w-8 mr-2" />
-            <Link to="/" className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <Link to="/" className="flex items-center">
+            <img src="/logo.jpg" alt="Logo" className="h-14 w-14 mr-2 rounded-full" />
+            <div className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               SolveBridge Africa
-            </Link>
-          </div>
+            </div>
+          </Link>
 
           
           <div className="hidden md:flex items-center space-x-4">

@@ -17,7 +17,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { path: "/dashboard", label: "Dashboard", icon: Home },
     { path: "/dashboard/progress", label: "Progress", icon: TrendingUp },
-    { path: "/dashboard/submit", label: "Submit Problem", icon: PlusCircle },
+    { path: "/submit-problem", label: "Submit Problem", icon: PlusCircle },
     { path: "/dashboard/explore", label: "Explore", icon: Search },
     { path: "/dashboard/settings", label: "Settings", icon: Settings },
   ];

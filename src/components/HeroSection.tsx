@@ -2,8 +2,37 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Lightbulb, Users } from "lucide-react";
 import heroImage from "@/assets/hero-collaboration.jpg";
 import { Link } from "react-router-dom";
+import { animate, useInView, useMotionValue, useTransform, motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+
+const Counter = ({ value, inView }) => {
+  const rawNumber = Number(value.replace(/\D/g, "")); // extract digits
+  const count = useMotionValue(0);
+
+  const rounded = useTransform(count, (v) => Math.floor(v).toLocaleString());
+
+  useEffect(() => {
+    if (inView) {
+      animate(count, rawNumber, {
+        duration: 2,
+        ease: "easeOut",
+      });
+    }
+  }, [inView, rawNumber]);
+
+  return <motion.span>{rounded}</motion.span>;
+};
 
 export const HeroSection = () => {
+    const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -100px 0px" });
+
+  const stats = [
+    { label: "Problems", value: "100+" },
+    { label: "Innovators", value: "200+" },
+    { label: "MVPs Built", value: "20+" },
+    { label: "Partnerships", value: "50+" },
+  ];
   return (
     <section
       id="home"
@@ -71,29 +100,31 @@ export const HeroSection = () => {
           </div>
 
           {/* Quick Stats */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-            {[
-              { label: "Problems", value: "100+" },
-              { label: "Innovators", value: "200+" },
-              { label: "MVPs Built", value: "20+" },
-              { label: "Partnerships", value: "50+" },
-            ].map((stat, index) => (
-              <div
-                key={stat.label}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 shadow-soft border border-border">
-                  <div className="text-3xl font-bold text-primary mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            ))}
+           <div
+      ref={ref}
+      className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto"
+    >
+      {stats.map((stat, index) => (
+        <motion.div
+          key={stat.label}
+          initial={{ y: 20, opacity: 0 }}
+          animate={inView ? { y: 0, opacity: 1 } : {}}
+          transition={{
+            duration: 0.6,
+            delay: index * 0.1,
+          }}
+        >
+          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 shadow-soft border border-border text-center">
+            <div className="text-3xl font-bold text-primary mb-1">
+              <Counter value={stat.value} inView={inView} />
+              {stat.value.includes("+") && "+"}
+            </div>
+
+            <div className="text-sm text-muted-foreground">{stat.label}</div>
           </div>
+        </motion.div>
+      ))}
+    </div>
         </div>
       </div>
 

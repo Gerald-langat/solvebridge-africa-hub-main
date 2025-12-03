@@ -1,7 +1,32 @@
 import { Card } from "@/components/ui/card";
 import { MessageSquare, CheckCircle, Rocket } from "lucide-react";
+import { motion, useMotionValue, useTransform, animate, useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
+
+const Counter = ({ value, inView }) => {
+  const numericValue = Number(value.replace(/,/g, ""));
+  const count = useMotionValue(0);
+
+  const rounded = useTransform(count, (v) =>
+    Math.floor(v).toLocaleString()
+  );
+
+  useEffect(() => {
+    if (inView) {
+      animate(count, numericValue, {
+        duration: 2,
+        ease: "easeOut",
+      });
+    }
+  }, [inView, numericValue]);
+
+  return <motion.span>{rounded}</motion.span>;
+};
 
 export const HowItWorks = () => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -100px 0px" });
+
   const steps = [
     {
       icon: MessageSquare,
@@ -27,6 +52,13 @@ export const HowItWorks = () => {
       color: "text-primary-light",
       bgColor: "bg-primary-light/10",
     },
+  ];
+
+   const metrics = [
+    { label: "Problems Submitted", value: "1000", suffix: "+" },
+    { label: "Innovators Onboarded", value: "200", suffix: "+" },
+    { label: "MVPs Built", value: "20", suffix: "+" },
+    { label: "Partnerships Formed", value: "50", suffix: "+" },
   ];
 
   return (
@@ -87,28 +119,26 @@ export const HowItWorks = () => {
             <h3 className="text-2xl font-bold text-center mb-8">
               Our Impact So Far
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[
-                { label: "Problems Submitted", value: "1,000", suffix: "+" },
-                { label: "Innovators Onboarded", value: "200", suffix: "+" },
-                { label: "MVPs Built", value: "20", suffix: "+" },
-                { label: "Partnerships Formed", value: "50", suffix: "+" },
-              ].map((metric, index) => (
-                <div
-                  key={metric.label}
-                  className="text-center animate-fade-in-up"
-                  style={{ animationDelay: `${index * 0.1 + 0.6}s` }}
-                >
-                  <div className="text-4xl md:text-5xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-2">
-                    {metric.value}
-                    {metric.suffix}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {metric.label}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {metrics.map((metric, index) => (
+        <motion.div
+          key={metric.label}
+          className="text-center"
+          initial={{ y: 20, opacity: 0 }}
+          animate={inView ? { y: 0, opacity: 1 } : {}}
+          transition={{
+            duration: 0.6,
+            delay: index * 0.1 + 0.2,
+          }}
+        >
+          <div className="text-4xl md:text-5xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-2">
+            <Counter value={metric.value} inView={inView} />
+            {metric.suffix}
+          </div>
+          <div className="text-sm text-muted-foreground">{metric.label}</div>
+        </motion.div>
+      ))}
+    </div>
           </div>
         </div>
       </div>
