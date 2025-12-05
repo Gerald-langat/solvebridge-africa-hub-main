@@ -3,12 +3,13 @@ import { ArrowRight, Lightbulb, Users } from "lucide-react";
 import heroImage from "@/assets/hero-collaboration.jpg";
 import { Link } from "react-router-dom";
 import { animate, useInView, useMotionValue, useTransform, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
+// Counter Component
 const Counter = ({ value, inView }) => {
   const rawNumber = Number(value.replace(/\D/g, "")); // extract digits
   const count = useMotionValue(0);
-
   const rounded = useTransform(count, (v) => Math.floor(v).toLocaleString());
 
   useEffect(() => {
@@ -23,22 +24,58 @@ const Counter = ({ value, inView }) => {
   return <motion.span>{rounded}</motion.span>;
 };
 
+// Number Formatter (1.2K+, 5.3M+)
+const formatNumber = (num) => {
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M+";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K+";
+  return num.toLocaleString() + "+";
+};
+
 export const HeroSection = () => {
-    const ref = useRef(null);
+  const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -100px 0px" });
 
-  const stats = [
-    { label: "Problems", value: "100+" },
-    { label: "Innovators", value: "200+" },
-    { label: "MVPs Built", value: "20+" },
-    { label: "Partnerships", value: "50+" },
+  const [stats, setStats] = useState({
+    submittedProblems: 0,
+    validatedProblems: 0,
+    collaborations: 0,
+    impactScore: 0,
+  });
+
+  // Fetch stats from Supabase
+  const fetchStats = async () => {
+    const { data: problems } = await supabase.from("problems").select("*");
+    const { data: collaborations } = await supabase.from("collaborations").select("*");
+
+    const validated = problems?.filter((p) => p.status === "validated").length || 0;
+    const impactScore = validated * 10 + (collaborations?.length || 0) * 5;
+
+    setStats({
+      submittedProblems: problems?.length || 0,
+      validatedProblems: validated,
+      collaborations: collaborations?.length || 0,
+      impactScore,
+    });
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  // Stats to render
+  const displayStats = [
+    { label: "Problems Submitted", value: stats.submittedProblems },
+    { label: "Validated Problems", value: stats.validatedProblems },
+    { label: "Collaborations", value: stats.collaborations },
+    { label: "Impact Score", value: stats.impactScore },
   ];
+
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
     >
-      {/* Background Image with Overlay */}
+      {/* Background with overlay */}
       <div className="absolute inset-0 z-0">
         <img
           src={heroImage}
@@ -52,7 +89,10 @@ export const HeroSection = () => {
       <div className="absolute top-20 left-10 opacity-20 animate-float">
         <Lightbulb size={60} className="text-primary" />
       </div>
-      <div className="absolute bottom-20 right-10 opacity-20 animate-float" style={{ animationDelay: '1s' }}>
+      <div
+        className="absolute bottom-20 right-10 opacity-20 animate-float"
+        style={{ animationDelay: "1s" }}
+      >
         <Users size={60} className="text-accent" />
       </div>
 
@@ -65,8 +105,10 @@ export const HeroSection = () => {
               Bridging Real Problems to Real Solutions
             </span>
           </h1>
+
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto">
-            SolveBridge Africa helps innovators, founders, and communities uncover real challenges people face — and turn them into impactful, sustainable startup ideas.
+            SolveBridge Africa helps innovators, founders, and communities uncover real challenges
+            people face — and turn them into impactful, sustainable startup ideas.
           </p>
 
           {/* CTA Buttons */}
@@ -81,6 +123,7 @@ export const HeroSection = () => {
                 <ArrowRight className="ml-2" size={20} />
               </Link>
             </Button>
+
             <Button
               size="lg"
               variant="outline"
@@ -89,6 +132,7 @@ export const HeroSection = () => {
             >
               <Link to="/auth">Join as a Founder</Link>
             </Button>
+
             <Button
               size="lg"
               variant="outline"
@@ -99,32 +143,27 @@ export const HeroSection = () => {
             </Button>
           </div>
 
-          {/* Quick Stats */}
-           <div
-      ref={ref}
-      className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto"
-    >
-      {stats.map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          initial={{ y: 20, opacity: 0 }}
-          animate={inView ? { y: 0, opacity: 1 } : {}}
-          transition={{
-            duration: 0.6,
-            delay: index * 0.1,
-          }}
-        >
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 shadow-soft border border-border text-center">
-            <div className="text-3xl font-bold text-primary mb-1">
-              <Counter value={stat.value} inView={inView} />
-              {stat.value.includes("+") && "+"}
-            </div>
-
-            <div className="text-sm text-muted-foreground">{stat.label}</div>
+          {/* Stats Section */}
+          <div
+            ref={ref}
+            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto"
+          >
+            {displayStats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ y: 20, opacity: 0 }}
+                animate={inView ? { y: 0, opacity: 1 } : {}}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <div className="bg-card/50 backdrop-blur-sm rounded-xl p-4 shadow-soft border border-border text-center">
+                  <div className="text-3xl font-bold text-primary mb-1">
+                    <Counter value={formatNumber(stat.value)} inView={inView} />
+                  </div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </motion.div>
-      ))}
-    </div>
         </div>
       </div>
 

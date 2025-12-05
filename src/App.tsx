@@ -33,6 +33,8 @@ import Impact from "./pages/Impact";
 import GetInvolved from "./pages/GetInvolved";
 import Team from "./pages/Team";
 import { ThemeProvider } from "./components/theme-provider";
+import Women from "./pages/Women&Youth";
+import MVP_Validation from "./pages/MVP_Validation";
 
 const queryClient = new QueryClient();
 
@@ -60,7 +62,6 @@ const App = () => (
           <Route path="/dashboard/explore" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/dashboard/settings" element={<Settings />} />
-          
           {/* Community & Collaboration */}
           <Route path="/community" element={<Community />} />
           <Route path="/chat" element={<Chat />} />
@@ -80,6 +81,10 @@ const App = () => (
           <Route path="/admin/partners" element={<AdminRoute><Partners /></AdminRoute>} />
           <Route path="/admin/projects" element={<AdminRoute><Projects /></AdminRoute>} />
           <Route path="/admin/impact" element={<AdminRoute><ImpactDashboard /></AdminRoute>} />
+
+          {/* Programs Routes */}
+           <Route path="/women" element={<Women />} />
+           <Route path="/mvp_validation" element={<MVP_Validation />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
