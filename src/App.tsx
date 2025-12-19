@@ -35,6 +35,7 @@ import Team from "./pages/Team";
 import { ThemeProvider } from "./components/theme-provider";
 import Women from "./pages/Women&Youth";
 import MVP_Validation from "./pages/MVP_Validation";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
       <Sonner />
       <SolveAI />
       <BrowserRouter>
+      <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
