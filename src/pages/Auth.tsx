@@ -69,6 +69,7 @@ export default function Auth() {
         data: {
           first_name: firstName,
           last_name: lastName,
+  
         },
       },
     });
@@ -76,6 +77,7 @@ export default function Auth() {
     if (error) throw error;
 
     const user = data.user;  // ✅ Get user directly
+
 
     if (user) {
       await supabase.from("profiles").insert([

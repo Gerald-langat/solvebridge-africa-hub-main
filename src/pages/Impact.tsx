@@ -5,6 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { CheckCircle, Rocket, Globe, Users, ArrowRight, Heart, Lightbulb, Zap, TreePine } from "lucide-react";
+import { animate, useMotionValue, useTransform, motion, inView } from "framer-motion";
+import { useEffect } from "react";
+
+// Counter Component
+const Counter = ({ value, inView }) => {
+  const rawNumber = Number(value.replace(/\D/g, "")); // extract digits
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (v) => Math.floor(v).toLocaleString());
+
+  useEffect(() => {
+    if (inView) {
+      animate(count, rawNumber, {
+        duration: 2,
+        ease: "easeOut",
+      });
+    }
+  }, [inView, rawNumber]);
+
+  return <motion.span>{rounded}</motion.span>;
+};
+
+const formatNumber = (num) => {
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M+";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K+";
+  return num.toLocaleString() + "+";
+};
 
 const metrics = [
   { icon: CheckCircle, value: "100+", label: "Problems Identified", color: "text-primary" },
@@ -66,19 +92,24 @@ export default function Impact() {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {metrics.map((metric, index) => (
-              <div 
-                key={index} 
-                className="text-center animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
+                 <motion.div
+                    key={metric.label}
+                    className="text-center"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={inView ? { y: 0, opacity: 1 } : {}}
+                    transition={{
+                      duration: 0.6,
+                      delay: index * 0.1 + 0.2,
+                    }}
+                  >
                 <div className={`w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mx-auto mb-4 ${metric.color}`}>
                   <metric.icon className="w-8 h-8 text-primary-foreground" />
                 </div>
                 <h3 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-accent bg-clip-text text-transparent">
-                  {metric.value}
+                  <Counter value={formatNumber(metric.value)} inView={inView} />
                 </h3>
                 <p className="text-muted-foreground font-medium">{metric.label}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
