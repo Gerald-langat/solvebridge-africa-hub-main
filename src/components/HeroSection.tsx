@@ -97,7 +97,7 @@ export const HeroSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center">
+      <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center mt-12 lg:mt-0">
         <div className="max-w-4xl mx-auto animate-fade-in">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight bg-gradient-accent bg-clip-text text-transparent">
             Empowering Africa's Changemakers 
