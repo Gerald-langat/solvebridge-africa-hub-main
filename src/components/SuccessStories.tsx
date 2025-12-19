@@ -15,7 +15,7 @@ export const SuccessStories = () => {
     },
     {
       quote: "Through the MVP Validation Labs, I refined my agricultural solution and secured $50K in seed funding within 6 months.",
-      name: "Rogers Wambua",
+      name: "Rodrigers kotes",
       role: "CEO, FarmTech Solutions",
       country: "Kenya",
       impact: "$50K funding secured",

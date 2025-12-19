@@ -3,7 +3,6 @@ import { MessageSquare, CheckCircle, Rocket } from "lucide-react";
 import { motion, useMotionValue, useTransform, animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { profile } from "console";
 
 
 // Counter Component

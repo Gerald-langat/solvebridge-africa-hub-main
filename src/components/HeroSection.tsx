@@ -99,11 +99,8 @@ export const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto animate-fade-in">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            Empowering Africa's Changemakers —{" "}
-            <span className="bg-gradient-accent bg-clip-text text-transparent">
-              Bridging Real Problems to Real Solutions
-            </span>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight bg-gradient-accent bg-clip-text text-transparent">
+            Empowering Africa's Changemakers 
           </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto">

@@ -92,14 +92,14 @@ export const Footer = () => {
               <Linkedin size={20} />
             </a>
             <a
-              href="#"
+              href="https://x.com/SolveBridge_Afr"
               className="bg-background/10 p-2 rounded-full hover:bg-background/20 transition-colors"
               aria-label="Twitter"
             >
               <Twitter size={20} />
             </a>
             <a
-              href="#"
+              href="https://www.facebook.com/share/19nbXi8mpp/"
               className="bg-background/10 p-2 rounded-full hover:bg-background/20 transition-colors"
               aria-label="Facebook"
             >
