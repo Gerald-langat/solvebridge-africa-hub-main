@@ -1,26 +1,34 @@
 import { Card } from "@/components/ui/card";
 import { MessageSquare, CheckCircle, Rocket } from "lucide-react";
 import { motion, useMotionValue, useTransform, animate, useInView } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { profile } from "console";
 
+
+// Counter Component
 const Counter = ({ value, inView }) => {
-  const numericValue = Number(value.replace(/,/g, ""));
+  const rawNumber = Number(value.replace(/\D/g, "")); // extract digits
   const count = useMotionValue(0);
-
-  const rounded = useTransform(count, (v) =>
-    Math.floor(v).toLocaleString()
-  );
+  const rounded = useTransform(count, (v) => Math.floor(v).toLocaleString());
 
   useEffect(() => {
     if (inView) {
-      animate(count, numericValue, {
+      animate(count, rawNumber, {
         duration: 2,
         ease: "easeOut",
       });
     }
-  }, [inView, numericValue]);
+  }, [inView, rawNumber]);
 
   return <motion.span>{rounded}</motion.span>;
+};
+
+// Number Formatter (1.2K+, 5.3M+)
+const formatNumber = (num) => {
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M+";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K+";
+  return num.toLocaleString() + "+";
 };
 
 export const HowItWorks = () => {
@@ -54,9 +62,30 @@ export const HowItWorks = () => {
     },
   ];
 
+  const [stats, setStats] = useState({
+      submittedProblems: 0,
+      innovators: 0,
+    });
+  
+    // Fetch stats from Supabase
+    const fetchStats = async () => {
+      const { data: problems } = await supabase.from("problems").select("*");
+      const { data: profiles } = await supabase.from("profiles").select("*");
+      const innovators = profiles?.filter((p) => p.role === "innovator").length || 0;
+  
+      setStats({
+        submittedProblems: problems?.length || 0,
+        innovators: innovators,
+      });
+    };
+  
+    useEffect(() => {
+      fetchStats();
+    }, []);
+
    const metrics = [
-    { label: "Problems Submitted", value: "1000", suffix: "+" },
-    { label: "Innovators Onboarded", value: "200", suffix: "+" },
+    { label: "Problems Submitted", value: stats.submittedProblems },
+    { label: "Innovators Onboarded", value: stats.innovators },
     { label: "MVPs Built", value: "20", suffix: "+" },
     { label: "Partnerships Formed", value: "50", suffix: "+" },
   ];
@@ -132,8 +161,7 @@ export const HowItWorks = () => {
           }}
         >
           <div className="text-4xl md:text-5xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-2">
-            <Counter value={metric.value} inView={inView} />
-            {metric.suffix}
+            <Counter value={formatNumber(metric.value)} inView={inView} />
           </div>
           <div className="text-sm text-muted-foreground">{metric.label}</div>
         </motion.div>
