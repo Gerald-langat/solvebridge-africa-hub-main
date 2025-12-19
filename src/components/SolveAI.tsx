@@ -175,7 +175,7 @@ export const SolveAI = () => {
       )}
 
       {isOpen && (
-        <Card className="fixed bottom-6 right-2 lg:right-6 w-96 h-[600px] shadow-2xl z-50 flex flex-col">
+        <Card className="fixed bottom-6 right-1 lg:right-6 w-96 h-[600px] shadow-2xl z-50 flex flex-col">
           <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-cyan-500 text-white rounded-t-lg">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
