@@ -24,15 +24,15 @@ export const Navigation = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img src="/logo.jpg" alt="Logo" className="h-14 w-14 mr-2 rounded-full" />
-            <div className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <div className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent md:hidden lg:inline-block">
               SolveBridge Africa
             </div>
           </Link>
 
-          
-          <div className="hidden md:flex items-center space-x-4">
-            {/*theme toggle btn*/}
             <ModeToggle />
+          <div className="hidden md:flex items-center space-x-4">
+
+          
           {/* Desktop Navigation */}
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Home
@@ -80,7 +80,6 @@ export const Navigation = () => {
         {isMenuOpen && (
           
           <div className="md:hidden py-4 animate-fade-in-up">
-            <ModeToggle />
 
             <div className="flex flex-col space-y-4">
               <Link
