@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserRole } from "@/hooks/useUserRole";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function Auth() {
   const [signupPassword, setSignupPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<string>("problem_submitter");
+  const [role, setRole] = useState<UserRole>("problem_submitter");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -57,7 +58,7 @@ export default function Auth() {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+const handleSignup = async (e: React.FormEvent) => {
   e.preventDefault();
   setIsLoading(true);
 
@@ -69,24 +70,31 @@ export default function Auth() {
         data: {
           first_name: firstName,
           last_name: lastName,
-  
         },
       },
     });
 
     if (error) throw error;
 
-    const user = data.user;  // ✅ Get user directly
-
+    const user = data.user;
 
     if (user) {
+      // 1️⃣ Save profile
       await supabase.from("profiles").insert([
         {
           id: user.id,
           first_name: firstName,
           last_name: lastName,
           email: signupEmail,
-          role: role
+          role: role,   // still fine if you keep it
+        },
+      ]);
+
+      // 2️⃣ Save role in user_roles
+      await supabase.from("user_roles").insert([
+        {
+          user_id: user.id,
+          role: role,
         },
       ]);
     }
@@ -97,7 +105,6 @@ export default function Auth() {
     });
 
     navigate("/dashboard");
-
   } catch (error: any) {
     toast({
       title: "Signup failed",
@@ -108,6 +115,7 @@ export default function Auth() {
     setIsLoading(false);
   }
 };
+
 
 
   return (
@@ -205,7 +213,7 @@ export default function Auth() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">I want to join as</Label>
-                  <Select value={role} onValueChange={setRole}>
+                  <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
                     <SelectTrigger id="role">
                       <SelectValue placeholder="Select your role" />
                     </SelectTrigger>

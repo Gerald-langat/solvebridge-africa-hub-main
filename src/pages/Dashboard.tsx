@@ -181,6 +181,7 @@ export default function Dashboard() {
                 {recentActivity.map((item, index) => (
                   <div
                     key={item.id}
+                    
                     className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors animate-fade-in-up"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
