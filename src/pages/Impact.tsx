@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { CheckCircle, Rocket, Globe, Users, ArrowRight, Heart, Lightbulb, Zap, TreePine } from "lucide-react";
-import { animate, useMotionValue, useTransform, motion, inView } from "framer-motion";
-import { useEffect } from "react";
+import { animate, useMotionValue, useTransform, motion, inView, useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 // Counter Component
 const Counter = ({ value, inView }) => {
@@ -159,25 +159,62 @@ export default function Impact() {
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-            {sectors.map((sector, index) => (
-              <div key={index} className="space-y-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <sector.icon className="w-6 h-6 text-primary" />
-                    <span className="font-semibold text-lg">{sector.name}</span>
-                  </div>
-                  <span className="text-2xl font-bold text-primary">{sector.percentage}%</span>
-                </div>
-                <div className="h-4 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${sector.color} rounded-full transition-all duration-1000 ease-out`}
-                    style={{ width: `${sector.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+  {sectors.map((sector, index) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+    return (
+      <motion.div
+        ref={ref}
+        key={index}
+        className="space-y-3"
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: index * 0.15 }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={isInView ? { scale: 1, opacity: 1 } : {}}
+              transition={{ delay: index * 0.15 + 0.2 }}
+            >
+              <sector.icon className="w-6 h-6 text-primary" />
+            </motion.div>
+
+            <span className="font-semibold text-lg">{sector.name}</span>
           </div>
+
+          <motion.span
+            className="text-2xl font-bold text-primary"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: index * 0.15 + 0.3 }}
+          >
+            {sector.percentage}%
+          </motion.span>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="h-4 bg-muted rounded-full overflow-hidden">
+          <motion.div
+            className={`h-full ${sector.color} rounded-full`}
+            initial={{ width: 0 }}
+            animate={isInView ? { width: `${sector.percentage}%` } : {}}
+            transition={{
+              duration: 1.2,
+              ease: "easeOut",
+              delay: index * 0.15 + 0.4,
+            }}
+          />
+        </div>
+      </motion.div>
+    );
+  })}
+</div>
+
 
           {/* Africa Map Placeholder */}
           <div className="mt-16 max-w-3xl mx-auto">
