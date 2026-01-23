@@ -36,7 +36,6 @@ import { ThemeProvider } from "./components/theme-provider";
 import Women from "./pages/Women&Youth";
 import MVP_Validation from "./pages/MVP_Validation";
 import ScrollToTop from "./components/ScrollToTop";
-import AdminCreateUser from "./pages/admin/AdminCreateUser";
 
 const queryClient = new QueryClient();
 
@@ -84,7 +83,6 @@ const App = () => (
           <Route path="/admin/partners" element={<AdminRoute><Partners /></AdminRoute>} />
           <Route path="/admin/projects" element={<AdminRoute><Projects /></AdminRoute>} />
           <Route path="/admin/impact" element={<AdminRoute><ImpactDashboard /></AdminRoute>} />
-          <Route path="/admin/create" element={<AdminRoute><AdminCreateUser /></AdminRoute>} />
     
           {/* Programs Routes */}
            <Route path="/women" element={<Women />} />

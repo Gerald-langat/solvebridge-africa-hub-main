@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, PlusCircle, Search, Settings, LogOut, Menu, Shield, Users, Target, DollarSign, Briefcase, BarChart } from "lucide-react";
+import { Home, TrendingUp, PlusCircle, Search, Settings, LogOut, Menu, Shield, Users, Target, DollarSign, Briefcase, BarChart, User } from "lucide-react";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 
@@ -29,6 +29,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { path: "/admin/partners", label: "Partners", icon: DollarSign },
     { path: "/admin/projects", label: "Projects", icon: Briefcase },
     { path: "/admin/impact", label: "Impact Analytics", icon: BarChart },
+    { path: "/admin/createUser", label: "Create User", icon: User },
+
   ];
 
   return (

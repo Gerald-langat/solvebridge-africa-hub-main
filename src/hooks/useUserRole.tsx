@@ -38,6 +38,8 @@ export function useUserRole() {
         .select("role")
         .eq("user_id", user.id);
 
+        console.log("user roles:", data);
+
       if (error) {
         console.error("Error fetching roles:", error);
         setRoles([]);

@@ -10,9 +10,25 @@ import {
   TrendingUp, Clock, UserPlus, FileCheck
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+
+type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
+
   const [stats, setStats] = useState({
     totalSubmissions: 0,
     validatedProblems: 0,
@@ -23,6 +39,12 @@ export default function AdminDashboard() {
   });
 
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
+
+  // Create user states
+  const [role, setRole] = useState<UserRole>("problem_submitter");
+    const [users, setUsers] = useState<any[]>([]);
+ const [selectedUser, setSelectedUser] = useState<string>("");
 
   useEffect(() => {
     fetchStats();
@@ -58,6 +80,35 @@ export default function AdminDashboard() {
     setRecentActivity(data || []);
   };
 
+  
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    const { data, error } = await supabase.from("profiles").select("*");
+    if (error) return console.log(error);
+    setUsers(data || []);
+  };
+
+  // Create User logic
+ const handlePromote = async () => {
+  if (!selectedUser) return alert("Select a user");
+
+
+const roleToDb = (role: UserRole) => {
+  if (role === "admin") return "moderator"; // or any other mapping
+  return role;
+};
+
+  await supabase
+    .from("user_roles")
+    .upsert({ user_id: selectedUser, role: roleToDb(role) });
+
+  alert("User role updated successfully!");
+};
+
+
   const statCards = [
     { label: "Total Submissions", value: stats.totalSubmissions, icon: FileText, color: "text-blue-600" },
     { label: "Validated Problems", value: stats.validatedProblems, icon: CheckCircle, color: "text-green-600" },
@@ -72,20 +123,75 @@ export default function AdminDashboard() {
       <DashboardLayout>
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row md:justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">Admin Control Center</h1>
               <p className="text-muted-foreground">Manage platform operations and KPIs</p>
             </div>
+
             <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsCreateUserOpen(true)}>
+                Promote User
+              </Button>
+
               <Button asChild>
                 <Link to="/admin/moderation">Review Problems</Link>
               </Button>
-              <Button variant="outline" asChild>
+
+              <Button asChild>
                 <Link to="/admin/impact">View Analytics</Link>
               </Button>
             </div>
           </div>
+
+          {/* Create User Modal */}
+          <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Create User</DialogTitle>
+                <DialogDescription>
+                  Create a new user Role (super_admin, moderator, program_manager)
+                </DialogDescription>
+              </DialogHeader>
+
+            <div>
+      <Label>Select User</Label>
+      <Select value={selectedUser} onValueChange={setSelectedUser}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select user" />
+        </SelectTrigger>
+        <SelectContent>
+          {users.map((u) => (
+            <SelectItem key={u.id} value={u.id}>
+              {u.first_name} {u.last_name} ({u.email})
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Label className="mt-4">Select Role</Label>
+      <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select role" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="super_admin">Super Admin</SelectItem>
+          <SelectItem value="moderator">Moderator</SelectItem>
+          <SelectItem value="program_manager">Program Manager</SelectItem>
+        </SelectContent>
+      </Select>
+
+    </div>
+
+              <DialogFooter className="flex gap-2">
+                <Button variant="outline" onClick={() => setIsCreateUserOpen(false)}>
+                  Cancel
+                </Button>
+                      <Button onClick={handlePromote}>Promote User</Button>
+
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           {/* KPI Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+
   useEffect(() => {
     if (user) {
       fetchProfile();
@@ -97,13 +98,15 @@ export default function Dashboard() {
       <DashboardLayout>
         <div className="space-y-8 animate-fade-in">
           {/* Welcome Header */}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Welcome, {loaded ? "..." : profile?.first_name} 👋
             </h1>
             <p className="text-muted-foreground text-lg">
               Here's your progress so far
             </p>
+            </div>
           </div>
 
           {/* Stats Cards */}

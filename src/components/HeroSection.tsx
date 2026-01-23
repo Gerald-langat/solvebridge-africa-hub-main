@@ -43,20 +43,31 @@ export const HeroSection = () => {
   });
 
   // Fetch stats from Supabase
-  const fetchStats = async () => {
-    const { data: problems } = await supabase.from("problems").select("*");
-    const { data: collaborations } = await supabase.from("collaborations").select("*");
+const fetchStats = async () => {
+  const { count: submittedProblems } = await supabase
+    .from("problems")
+    .select("id", { count: "exact", head: true });
 
-    const validated = problems?.filter((p) => p.status === "validated").length || 0;
-    const impactScore = validated * 10 + (collaborations?.length || 0) * 5;
+  const { count: validatedProblems } = await supabase
+    .from("problems")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "validated");
 
-    setStats({
-      submittedProblems: problems?.length || 0,
-      validatedProblems: validated,
-      collaborations: collaborations?.length || 0,
-      impactScore,
-    });
-  };
+  const { count: collaborations } = await supabase
+    .from("collaborations")
+    .select("id", { count: "exact", head: true });
+
+  const impactScore =
+    (validatedProblems || 0) * 10 + (collaborations || 0) * 5;
+
+  setStats({
+    submittedProblems: submittedProblems || 0,
+    validatedProblems: validatedProblems || 0,
+    collaborations: collaborations || 0,
+    impactScore,
+  });
+};
+
 
   useEffect(() => {
     fetchStats();
