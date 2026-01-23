@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  CheckCircle, XCircle, AlertTriangle, Search, Filter, MapPin, Calendar
+  CheckCircle, XCircle, Search, MapPin, Calendar
 } from "lucide-react";
 import {
   Dialog,
@@ -36,7 +36,7 @@ export default function Moderation() {
   const fetchProblems = async () => {
     let query = supabase
       .from('problems')
-      .select('*, profiles(first_name, last_name)')
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (statusFilter !== "all") {
@@ -63,22 +63,23 @@ export default function Moderation() {
 
   const handleValidate = async (problemId: string) => {
     const { error } = await supabase
-      .from('problems')
-      .update({ 
-        status: 'validated' as const,
-        moderated_by: user?.id,
-        moderated_at: new Date().toISOString(),
-        moderator_notes: moderatorNotes
-      })
-      .eq('id', problemId);
+  .from('problems')
+  .update({
+    status: 'validated',
+    moderated_by: user?.id,
+    moderated_at: new Date().toISOString(),
+    moderator_notes: moderatorNotes
+  })
+  .eq('id', problemId);
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to validate problem",
-        variant: "destructive"
-      });
-    } else {
+if (error) {
+  console.error("Validate error:", error); // 👈 ADD THIS
+  toast({
+    title: "Error",
+    description: error.message, // 👈 SHOW REAL ERROR
+    variant: "destructive"
+  });
+} else {
       await logAction('validated_problem', problemId, { notes: moderatorNotes });
       toast({
         title: "Success",
