@@ -43,6 +43,7 @@ export default function PartnersDashboard() {
     { label: "Total Rewards", value: "$45K", icon: Award, color: "text-purple-500" },
   ];
 
+  
   return (
     <DashboardLayout>
       <div className="container mx-auto p-6 space-y-6">

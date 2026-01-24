@@ -8,7 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserRole } from "@/hooks/useUserRole";
+
+type ValidRole = "super_admin" | "moderator" | "program_manager" | "partner" | "community_ambassador" | "read_only_viewer" | "problem_submitter" | "innovator" | "mentor";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function Auth() {
   const [signupPassword, setSignupPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<UserRole>("problem_submitter");
+  const [role, setRole] = useState<ValidRole>("problem_submitter");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -212,7 +213,7 @@ const handleSignup = async (e: React.FormEvent) => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">I want to join as</Label>
-                  <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+                  <Select value={role} onValueChange={(value) => setRole(value as ValidRole)}>
                     <SelectTrigger id="role">
                       <SelectValue placeholder="Select your role" />
                     </SelectTrigger>

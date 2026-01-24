@@ -64,6 +64,7 @@ const App = () => (
           <Route path="/dashboard/explore" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/dashboard/settings" element={<Settings />} />
+          
           {/* Community & Collaboration */}
           <Route path="/community" element={<Community />} />
           <Route path="/chat" element={<Chat />} />

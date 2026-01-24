@@ -208,17 +208,22 @@ export default function Community() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4">{post.body.slice(0, 200)}...</p>
+                    <p className="text-muted-foreground mb-4">
+                      {post.body?.slice(0, 200) || "No content"}...
+                    </p>
+
                     <div className="flex gap-4 items-center">
                       <Button variant="ghost" size="sm">
                         <ThumbsUp className="h-4 w-4 mr-2" />
-                        {post.upvotes || 0}
+                        {typeof post.upvotes === "number" ? post.upvotes : 0}
                       </Button>
+
                       <Button variant="ghost" size="sm">
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Reply
                       </Button>
-                      {post.tags && post.tags.length > 0 && (
+
+                      {Array.isArray(post.tags) && post.tags.length > 0 && (
                         <div className="flex gap-2 ml-auto">
                           {post.tags.slice(0, 3).map((tag, idx) => (
                             <Badge key={idx} variant="outline">{tag}</Badge>
@@ -226,7 +231,8 @@ export default function Community() {
                         </div>
                       )}
                     </div>
-                  </CardContent>
+                    </CardContent>
+
                 </Card>
               ))
             )}
