@@ -21,7 +21,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ModeToggle } from "@/components/mode-toggle";
 
 type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
 
@@ -92,21 +91,25 @@ export default function AdminDashboard() {
   };
 
   // Create User logic
- const handlePromote = async () => {
+const handlePromote = async () => {
   if (!selectedUser) return alert("Select a user");
 
+  const roleToDb = (role: UserRole) => {
+    if (role === "admin") return "moderator";
+    return role;
+  };
 
-const roleToDb = (role: UserRole) => {
-  if (role === "admin") return "moderator"; // or any other mapping
-  return role;
-};
+  const newRole = roleToDb(role);
 
-  await supabase
+  const { error: roleError } = await supabase
     .from("user_roles")
-    .upsert({ user_id: selectedUser, role: roleToDb(role) });
+    .upsert({ user_id: selectedUser, role: newRole });
+
+  if (roleError) return alert(roleError.message);
 
   alert("User role updated successfully!");
 };
+
 
 
   const statCards = [

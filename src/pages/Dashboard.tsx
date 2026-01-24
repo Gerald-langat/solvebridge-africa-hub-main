@@ -30,16 +30,35 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  const fetchProfile = async () => {
-    setLoaded(true);
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user?.id)
-      .single();
-    setProfile(data);
+const fetchProfile = async () => {
+  setLoaded(true);
+
+  const { data: profiles, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
+
+  if (profileError) {
+    console.log(profileError);
     setLoaded(false);
-  };
+    return;
+  }
+
+const { data: userRoles, error: roleError } = await supabase
+  .from("user_roles")
+  .select("role")
+  .eq("user_id", user?.id);
+
+setProfile({
+  ...profiles,
+  roles: userRoles?.map((r: any) => r.role) || ["user"],
+});
+
+
+  setLoaded(false);
+};
+
 
 
   const fetchStats = async () => {
@@ -148,7 +167,10 @@ export default function Dashboard() {
                   <Users className="text-secondary" size={24} />
                 </div>
               </div>
-              <div className="2xl:text-3xl font-bold mb-1">{loaded ? "..." : profile?.role}</div>
+            <div className="2xl:text-3xl font-bold mb-1">
+  {loaded ? "..." : (profile?.roles?.join(", ") || "user")}
+</div>
+
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>

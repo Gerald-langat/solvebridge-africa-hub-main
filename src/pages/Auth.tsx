@@ -86,7 +86,6 @@ const handleSignup = async (e: React.FormEvent) => {
           first_name: firstName,
           last_name: lastName,
           email: signupEmail,
-          role: role,   // still fine if you keep it
         },
       ]);
 
