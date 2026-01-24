@@ -18,10 +18,10 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { ModeToggle } from "@/components/mode-toggle";
 
 type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
 
@@ -128,7 +128,6 @@ const roleToDb = (role: UserRole) => {
               <h1 className="text-3xl font-bold">Admin Control Center</h1>
               <p className="text-muted-foreground">Manage platform operations and KPIs</p>
             </div>
-
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setIsCreateUserOpen(true)}>
                 Promote User

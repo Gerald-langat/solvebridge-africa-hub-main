@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, Search, TrendingUp, Users, Award, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Dashboard() {
   const { user } = useAuth();

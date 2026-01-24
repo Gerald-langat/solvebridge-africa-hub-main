@@ -29,7 +29,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { path: "/admin/partners", label: "Partners", icon: DollarSign },
     { path: "/admin/projects", label: "Projects", icon: Briefcase },
     { path: "/admin/impact", label: "Impact Analytics", icon: BarChart },
-    { path: "/admin/createUser", label: "Create User", icon: User },
 
   ];
 
@@ -60,6 +59,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <span>{item.label}</span>
               </Link>
             ))}
+           
             {isAdmin && (
               <>
                 <Separator className="my-2" />

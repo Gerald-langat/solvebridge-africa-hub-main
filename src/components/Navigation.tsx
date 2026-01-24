@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ModeToggle } from "./mode-toggle";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Navigation = () => {
@@ -29,7 +28,7 @@ export const Navigation = () => {
             </div>
           </Link>
 
-            <ModeToggle />
+            
           <div className="hidden md:flex items-center space-x-4">
 
           

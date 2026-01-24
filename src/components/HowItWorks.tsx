@@ -70,7 +70,7 @@ export const HowItWorks = () => {
     const fetchStats = async () => {
       const { data: problems } = await supabase.from("problems").select("*");
       const { data: profiles } = await supabase.from("profiles").select("*");
-      const innovators = profiles?.filter((p) => p.role === "innovator").length || 0;
+      const innovators = profiles?.filter((p:any) => p.role === "innovator").length || 0;
   
       setStats({
         submittedProblems: problems?.length || 0,

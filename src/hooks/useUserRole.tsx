@@ -8,6 +8,7 @@ export type UserRole =
   | "program_manager"
   | "partner"
   | "community_ambassador"
+  | "admin"
   | "read_only_viewer"
   | "problem_submitter"
   | "innovator"
@@ -61,7 +62,7 @@ export function useUserRole() {
 
   const isAdmin =
     roles !== null &&
-    hasAnyRole(["super_admin", "moderator", "program_manager"]);
+    hasAnyRole(["super_admin", "moderator", "program_manager", "admin"]);
 
   return { roles, loading, hasRole, hasAnyRole, isAdmin };
 }

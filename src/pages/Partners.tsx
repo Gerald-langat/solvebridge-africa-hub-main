@@ -1,3 +1,4 @@
+// app/pages/Partners.tsx
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +35,7 @@ export default function Partners() {
         contact_name: data.contact_name,
         contact_email: data.contact_email,
         notes: data.notes,
-        status: "active",
+        status: "pending",
       });
 
       if (error) throw error;

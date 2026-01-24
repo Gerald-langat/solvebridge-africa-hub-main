@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { CheckCircle2, Users, Rocket, Target, Download, TrendingUp } from "lucide-react";
+import jsPDF from "jspdf";
 
 export default function ImpactDashboard() {
   const { data: problems } = useQuery({
@@ -88,9 +89,84 @@ export default function ImpactDashboard() {
   const validatedProblems = problems?.filter(p => p.status === "validated").length || 0;
   const activeMVPs = projects?.filter(p => p.status === "development" || p.status === "pilot").length || 0;
 
-  const handleExport = (format: "csv" | "pdf") => {
-    alert(`Exporting ${format.toUpperCase()} report... (Feature in development)`);
-  };
+const handleExport = (format: "csv" | "pdf") => {
+  if (format === "csv") {
+    const csvData = problems?.map(p => ({
+      title: p.title,
+      sector: p.sector,
+      status: p.status,
+      created_at: p.created_at,
+    })) || [];
+
+    exportToCSV("problems-report.csv", csvData);
+  }
+
+  if (format === "pdf") {
+    exportToPDF();
+  }
+};
+
+
+  const exportToCSV = (filename: string, rows: any[]) => {
+  if (!rows || rows.length === 0) return;
+
+  const headers = Object.keys(rows[0]);
+  const csvContent = [
+    headers.join(","), // header row
+    ...rows.map(row =>
+      headers.map(field =>
+        JSON.stringify(row[field] ?? "")
+      ).join(",")
+    ),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const exportToPDF = () => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Impact Analytics Report", 14, 20);
+
+  doc.setFontSize(12);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+  let y = 45;
+
+  doc.setFontSize(14);
+  doc.text("Key Metrics", 14, y);
+  y += 10;
+
+  doc.setFontSize(11);
+  doc.text(`Validated Problems: ${validatedProblems}`, 14, y); y += 8;
+  doc.text(`Active Innovators: ${profiles?.length || 0}`, 14, y); y += 8;
+  doc.text(`Active MVPs: ${activeMVPs}`, 14, y); y += 8;
+  doc.text(`People Impacted: ${totalPeopleImpacted}`, 14, y); y += 8;
+  doc.text(`Jobs Created: ${totalJobsCreated}`, 14, y); y += 12;
+
+  doc.setFontSize(14);
+  doc.text("Problems by Sector", 14, y);
+  y += 10;
+
+  doc.setFontSize(11);
+  sectorData.forEach((sector) => {
+    doc.text(`${sector.name}: ${sector.value}`, 14, y);
+    y += 7;
+  });
+
+  doc.save("impact-report.pdf");
+};
+
+
 
   return (
     <DashboardLayout>

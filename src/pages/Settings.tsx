@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Separator } from "@/components/ui/separator";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Settings() {
   const { user } = useAuth();
@@ -77,12 +78,15 @@ export default function Settings() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="max-w-3xl space-y-8 animate-fade-in">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Settings</h1>
-            <p className="text-muted-foreground mt-2">
-              Manage your profile and preferences
-            </p>
+        <div className="max-w-3xl space-y-8 animate-fade-in mx-auto">
+          <div className="flex items-center justify-between">
+            <div>
+                <h1 className="text-4xl font-bold text-foreground">Settings</h1>
+                <p className="text-muted-foreground mt-2">
+                  Manage your profile and preferences
+                </p>
+            </div>
+            <ModeToggle />
           </div>
 
           <form onSubmit={handleUpdateProfile} className="space-y-8">
