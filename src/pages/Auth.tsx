@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type ValidRole = "super_admin" | "moderator" | "program_manager" | "partner" | "community_ambassador" | "read_only_viewer" | "Contributor" | "innovator" | "mentor";
+type ValidRole = "Super_admin" | "Moderator" | "Program_manager" | "Partner" | "Community_ambassador" | "Contributor" | "Innovator" | "Mentor";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -219,8 +219,8 @@ const handleSignup = async (e: React.FormEvent) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Contributor">Contributor</SelectItem>
-                      <SelectItem value="innovator">Innovator</SelectItem>
-                      <SelectItem value="mentor">Mentor</SelectItem>
+                      <SelectItem value="Innovator">Innovator</SelectItem>
+                      <SelectItem value="Mentor">Mentor</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
