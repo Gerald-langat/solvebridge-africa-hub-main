@@ -93,6 +93,21 @@ export default function Community() {
     },
   });
 
+  const upvoteMutation = useMutation({
+  mutationFn: async (postId: string) => {
+    const { error } = await supabase.rpc("increment_upvotes" as any, { post_id: postId });
+    if (error) {
+  console.error("Upvote failed", error);
+} else {
+  console.log("Upvote success for", postId);
+}
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["discussion-posts"] });
+  }
+});
+
+
   return (
     <DashboardLayout>
       <div className="container mx-auto p-6 space-y-6">
@@ -213,10 +228,15 @@ export default function Community() {
                     </p>
 
                     <div className="flex gap-4 items-center">
-                      <Button variant="ghost" size="sm">
-                        <ThumbsUp className="h-4 w-4 mr-2" />
-                        {typeof post.upvotes === "number" ? post.upvotes : 0}
-                      </Button>
+                      <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => upvoteMutation.mutate(post.id)}
+                    >
+                      <ThumbsUp className="h-4 w-4 mr-2" />
+                      {post.upvotes ?? 0}
+                    </Button>
+
 
                       <Button variant="ghost" size="sm">
                         <MessageSquare className="h-4 w-4 mr-2" />

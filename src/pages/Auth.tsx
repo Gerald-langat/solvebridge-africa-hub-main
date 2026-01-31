@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type ValidRole = "super_admin" | "moderator" | "program_manager" | "partner" | "community_ambassador" | "read_only_viewer" | "problem_submitter" | "innovator" | "mentor";
+type ValidRole = "super_admin" | "moderator" | "program_manager" | "partner" | "community_ambassador" | "read_only_viewer" | "contributor" | "innovator" | "mentor";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function Auth() {
   const [signupPassword, setSignupPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<ValidRole>("problem_submitter");
+  const [role, setRole] = useState<ValidRole>("contributor");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -218,7 +218,7 @@ const handleSignup = async (e: React.FormEvent) => {
                       <SelectValue placeholder="Select your role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="problem_submitter">Problem Submitter</SelectItem>
+                      <SelectItem value="contributor">Contributor</SelectItem>
                       <SelectItem value="innovator">Innovator</SelectItem>
                       <SelectItem value="mentor">Mentor</SelectItem>
                     </SelectContent>

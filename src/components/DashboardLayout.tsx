@@ -101,7 +101,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <aside className="hidden lg:flex lg:flex-col lg:w-64 border-r bg-card min-h-screen sticky top-0">
           <div className="p-6 border-b">
             <a href="/" className="cursor-pointer text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              SolveBridge
+              SolveBridge Africa
             </a>
           </div>
           

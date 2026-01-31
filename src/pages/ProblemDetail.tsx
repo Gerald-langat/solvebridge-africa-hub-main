@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Loader2, MapPin, Users, Target, ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
 
 export default function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
@@ -45,6 +46,26 @@ export default function ProblemDetail() {
       return data;
     },
   });
+
+const incrementViews = async (problemId: string) => {
+  await supabase.rpc("increment_problem_views", { pid: problemId });
+
+  const { data } = await supabase
+    .from("problems")
+    .select("views_count")
+    .eq("id", problemId)
+    .single();
+
+  console.log("Updated views:", data?.views_count);
+};
+
+
+useEffect(() => {
+  if (problem?.id) {
+    incrementViews(problem.id);
+  }
+}, [problem?.id]);
+
 
   if (isLoading) {
     return (
@@ -103,6 +124,7 @@ export default function ProblemDetail() {
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{problem.sector}</Badge>
                 </div>
+                {problem.profiles.first_name}{" "}{problem.profiles.last_name}
               </div>
             </CardHeader>
             <CardContent className="space-y-6">

@@ -32,7 +32,7 @@ export const JoinMovement = () => {
                 Share a challenge your community faces. Your voice matters and can spark real change.
               </p>
               <Button asChild className="w-full">
-                <Link to="/auth">Get Started</Link>
+                <Link to="/submit-problem">Get Started</Link>
               </Button>
             </Card>
 

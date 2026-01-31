@@ -8,37 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { FileText, Users, HandshakeIcon, MapPin, Mail, Phone, ArrowRight } from "lucide-react";
+import { FileText, Users, HandshakeIcon, MapPin, Mail, Phone, ArrowRight, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
+import { useRef } from "react";
 
-const actionTiles = [
-  {
-    icon: FileText,
-    title: "Submit a Problem",
-    description: "Share a challenge you'd pay to see solved.",
-    action: "Submit Problem",
-    link: "/submit-problem",
-    color: "from-primary/20 to-primary/10"
-  },
-  {
-    icon: Users,
-    title: "Join as a Founder",
-    description: "Find a problem that fits your skills and build a solution.",
-    action: "Sign Up",
-    link: "/auth",
-    color: "from-secondary/20 to-secondary/10"
-  },
-  {
-    icon: HandshakeIcon,
-    title: "Partner or Donate",
-    description: "Support our mission through funding or expertise.",
-    action: "Get in Touch",
-    link: "#contact-form",
-    color: "from-accent/20 to-accent/10"
-  }
-];
 
 export default function GetInvolved() {
+  const contactRef = useRef<HTMLDivElement | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -76,39 +52,94 @@ export default function GetInvolved() {
       <section className="py-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-20">
-            {actionTiles.map((tile, index) => (
+           {/* submit a problem */}
               <Card 
-                key={index} 
-                className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 overflow-hidden border-primary/20"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${tile.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 overflow-hidden border-primary/20">
+                <div className="absolute inset-0 bg-gradient-to-br opacity-0 from-secondary/20 to-secondary/10 group-hover:opacity-100 transition-opacity duration-300" />
                 <CardHeader className="relative">
                   <div className="w-16 h-16 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <tile.icon className="w-8 h-8 text-primary-foreground" />
+                    <FileText className="w-8 h-8 text-primary-foreground" />
                   </div>
-                  <CardTitle className="text-2xl">{tile.title}</CardTitle>
+                  <CardTitle className="text-2xl">Submit a Problem</CardTitle>
                   <CardDescription className="text-base pt-2">
-                    {tile.description}
+                    Share a challenge you'd pay to see solved.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="relative">
                   <Button 
                     asChild 
                     variant="default"
-                    className="w-full group-hover:shadow-glow transition-all"
+                    className="w-full group-hover:shadow-glow transition-all z-50"
                   >
-                    <Link to={tile.link}>
-                      {tile.action}
+                    <Link to="/submit-problem">
+                      Submit a Problem
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   </Button>
                 </CardContent>
               </Card>
-            ))}
+           {/* Join as a Founder */}
+           
+           <Card 
+                className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 overflow-hidden border-primary/20"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br opacity-0 from-secondary/20 to-secondary/10 group-hover:opacity-100 transition-opacity duration-300" />
+                <CardHeader className="relative">
+                  <div className="w-16 h-16 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Users className="w-8 h-8 text-primary-foreground" />
+                  </div>
+                  <CardTitle className="text-2xl">Join as a Founder</CardTitle>
+                  <CardDescription className="text-base pt-2">
+                    Find a problem that fits your skills and build a solution.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative">
+                  <Button 
+                    asChild 
+                    variant="default"
+                    className="w-full group-hover:shadow-glow transition-all z-50"
+                  >
+                    <Link to="/explore">
+                     Explore
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            {/* Partner or Donate */}
+              <Card 
+                className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 overflow-hidden border-primary/20"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br opacity-0 from-secondary/20 to-secondary/10 group-hover:opacity-100 transition-opacity duration-300" />
+                <CardHeader className="relative">
+                  <div className="w-16 h-16 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <HandshakeIcon className="w-8 h-8 text-primary-foreground" />
+                  </div>
+                  <CardTitle className="text-2xl">Partner or Donate</CardTitle>
+                  <CardDescription className="text-base pt-2">
+                    Support our mission through funding or expertise.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative">
+                 <div
+                    onClick={() => {
+                      contactRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }}
+                    className="bg-gradient-primary flex items-center justify-center px-4 py-2 rounded-md text-white font-medium cursor-pointer w-full text-center hover:shadow-glow transition-all"
+                  >
+                    <ArrowDown className="mr-2 w-4 h-4" />
+                    <span>Get in Touch</span>
+                  </div>
+                  <div ref={contactRef}></div>
+                </CardContent>
+              </Card>
           </div>
 
           {/* Contact Form and Sidebar */}
-          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto" id="contact-form">
+          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Contact Form */}
             <Card className="lg:col-span-2 border-primary/20 shadow-elegant">
               <CardHeader>
