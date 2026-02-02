@@ -223,6 +223,9 @@ export default function SubmitProblem() {
       ))}
     </SelectContent>
   </Select>
+
+
+</div>
   {formData.sector === "Other" && (
   <div className="space-y-2">
     <Label htmlFor="customSector">Enter category *</Label>
@@ -237,9 +240,6 @@ export default function SubmitProblem() {
     />
   </div>
 )}
-
-</div>
-
                     <div className="space-y-2">
                       <Label htmlFor="location">Location (Country + City) *</Label>
                       <Input
