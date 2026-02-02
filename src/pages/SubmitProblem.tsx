@@ -31,6 +31,8 @@ const problemSchema = z.object({
   impact_scale: z.string().min(1, "Please select an impact scale"),
   stakeholders: z.string().max(500, "Stakeholders must be less than 500 characters").optional(),
   image_url: z.string().url("Invalid URL format").optional().or(z.literal("")),
+  customSector: z.string().optional(),
+
 });
 
 export default function SubmitProblem() {
@@ -38,13 +40,13 @@ export default function SubmitProblem() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);  
   const [formData, setFormData] = useState({
     title: "",
     summary: "",
     description: "",
     sector: "",
+      customSector: "",
     location: "",
     target_audience: "",
     impact_scale: "",
@@ -68,10 +70,16 @@ export default function SubmitProblem() {
       // Validate form data
       const validatedData = problemSchema.parse(formData);
 
+      const finalSector =
+  formData.sector === "Other"
+    ? formData.customSector
+    : formData.sector;
+
+
       const { error } = await supabase.from("problems").insert([{
         title: validatedData.title.trim(),
         description: validatedData.description.trim(),
-        sector: validatedData.sector.toLowerCase() as any,
+        sector: finalSector.toLowerCase() as any,
         location: validatedData.location.trim(),
         affected_population: validatedData.target_audience.trim(),
         image_url: validatedData.image_url || null,
@@ -194,24 +202,43 @@ export default function SubmitProblem() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="sector">Category *</Label>
-                      <Select
-                        value={formData.sector}
-                        onValueChange={(value) => setFormData({ ...formData, sector: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CATEGORIES.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="space-y-2">
+  <Label htmlFor="sector">Category *</Label>
+
+  <Select
+    value={formData.sector}
+    onValueChange={(value) =>
+      setFormData({ ...formData, sector: value })
+    }
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select category" />
+    </SelectTrigger>
+
+    <SelectContent>
+      {CATEGORIES.map((category) => (
+        <SelectItem key={category} value={category}>
+          {category}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+  {formData.sector === "Other" && (
+  <div className="space-y-2">
+    <Label htmlFor="customSector">Enter category *</Label>
+    <Input
+      id="customSector"
+      placeholder="Enter custom category"
+      value={formData.customSector}
+      onChange={(e) =>
+        setFormData({ ...formData, customSector: e.target.value })
+      }
+      required
+    />
+  </div>
+)}
+
+</div>
 
                     <div className="space-y-2">
                       <Label htmlFor="location">Location (Country + City) *</Label>
