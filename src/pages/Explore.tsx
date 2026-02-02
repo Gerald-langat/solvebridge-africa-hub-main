@@ -31,7 +31,7 @@ export default function Explore() {
   const fetchProblems = async () => {
     let query = supabase
       .from("problems")
-      .select("*, profiles(first_name, last_name)")
+      .select("*")
       .eq("status", "validated")
       .order("created_at", { ascending: false });
 
