@@ -318,7 +318,7 @@ const uploadImage = async (file: File) => {
     <button
       type="button"
       onClick={() => document.getElementById("imageFile")?.click()}
-      className="p-2 border rounded-md hover:bg-muted"
+      className="p-2 border rounded-md hover:bg-muted cursor-pointer"
     >
       <Upload className="h-4 w-4 text-muted-foreground" />
     </button>
