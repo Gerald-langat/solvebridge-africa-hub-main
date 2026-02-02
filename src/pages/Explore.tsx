@@ -31,7 +31,7 @@ export default function Explore() {
   const fetchProblems = async () => {
     let query = supabase
       .from("problems")
-      .select("*")
+      .select("*, profiles(first_name, last_name)")
       .eq("status", "validated")
       .order("created_at", { ascending: false });
 
@@ -196,7 +196,7 @@ export default function Explore() {
           {filteredProblems.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">No problems found matching your criteria</p>
+                <p className="text-muted-foreground">No validated problems found matching your criteria</p>
               </CardContent>
             </Card>
           )}
