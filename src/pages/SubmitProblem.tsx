@@ -55,6 +55,30 @@ export default function SubmitProblem() {
   });
   const [confirmed, setConfirmed] = useState(false);
 
+const uploadImage = async (file: File) => {
+  if (!user) throw new Error("Not authenticated");
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+  const { error } = await supabase.storage
+    .from("problem-images")
+    .upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage
+    .from("problem-images")
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+};
+
+
+
   const handleSubmit = async () => {
     if (!confirmed) {
       toast({
@@ -252,22 +276,65 @@ export default function SubmitProblem() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="image">Upload Supporting Image (Optional)</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="image"
-                        type="url"
-                        placeholder="Image URL"
-                        value={formData.image_url}
-                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      />
-                      <Upload className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Paste an image URL or upload will be available soon
-                    </p>
-                  </div>
+  <div className="space-y-2">
+  <Label>Upload Supporting Image (Optional)</Label>
+
+  {/* Hidden file input */}
+  <input
+    type="file"
+    id="imageFile"
+    accept="image/*"
+    hidden
+    onChange={async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        toast({ title: "Uploading image..." });
+
+        const url = await uploadImage(file);
+        setFormData({ ...formData, image_url: url });
+
+        toast({ title: "Image uploaded successfully ✅" });
+      } catch (err: any) {
+        toast({
+          title: "Upload failed",
+          description: err.message,
+          variant: "destructive",
+        });
+      }
+    }}
+  />
+
+  <div className="flex items-center gap-2">
+    {/* URL input optional */}
+    <Input
+      placeholder="Or paste image URL"
+      value={formData.image_url}
+      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+    />
+
+    {/* Upload icon */}
+    <button
+      type="button"
+      onClick={() => document.getElementById("imageFile")?.click()}
+      className="p-2 border rounded-md hover:bg-muted"
+    >
+      <Upload className="h-4 w-4 text-muted-foreground" />
+    </button>
+  </div>
+
+  {/* Preview */}
+  {formData.image_url && (
+    <img
+      src={formData.image_url}
+      alt="Preview"
+      className="mt-2 rounded-lg max-h-48 object-cover border"
+    />
+  )}
+</div>
+
+
                 </>
               )}
 
