@@ -88,7 +88,7 @@ useEffect(() => {
     );
   }
 
-  const canProposeSolution = hasRole('innovator') || hasRole('super_admin');
+  const canProposeSolution = hasRole('Innovator') || hasRole('Super_admin');
 
   return (
     <ProtectedRoute>
