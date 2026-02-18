@@ -26,8 +26,9 @@ const advisors = [
   {
     name: "Technical Lead",
     role: "Technology & Innovation",
-    bio: "Coming Soon",
-    linkedin: "https://www.linkedin.com/in/rodgers-wambua-725763180/"
+    bio: "Technical Lead with a passion for building scalable solutions that drive social impact.",
+    linkedin: "https://www.linkedin.com/in/rodgers-wambua-725763180/",
+    image: "../images/tech.jpg"
   },
   {
     name: "Program Director",
@@ -115,7 +116,10 @@ export default function Team() {
                 <CardContent className="p-8 text-center">
                   <div className="w-32 h-32 rounded-full bg-gradient-primary mx-auto mb-6 flex items-center justify-center overflow-hidden">
                     <div className="text-6xl text-primary-foreground font-bold">
-                      {advisor.name.charAt(0)}
+                             <img 
+                    src={advisor.image} 
+                    className="w-fit  rounded-full h-fit object-cover"
+                  />
                     </div>
                   </div>
                   <h3 className="text-2xl font-bold mb-2">{advisor.name}</h3>
@@ -152,7 +156,7 @@ export default function Team() {
               We're always looking for passionate individuals to help bridge Africa's innovation gap
             </p>
                 <a
-                href="https://mail.google.com/mail/?view=cm&fs=1&to=solvebridgeafrica@gmail.com"
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=info@solvebridge.africa"
                 target="_blank"
                 rel="noopener noreferrer"
               >
