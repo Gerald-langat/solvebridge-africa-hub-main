@@ -16,18 +16,15 @@ export default function Explore() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
   const [problems, setProblems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
   const [savedProblems, setSavedProblems] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (user) {
-      fetchProblems();
-      fetchSavedProblems();
-    }
-  }, [user, sectorFilter]);
-
+  // ------------------------------
+  // Fetch Problems + Views
+  // ------------------------------
   const fetchProblems = async () => {
     let query = supabase
       .from("problems")
@@ -35,48 +32,93 @@ export default function Explore() {
       .eq("status", "validated")
       .order("created_at", { ascending: false });
 
-    if (sectorFilter !== "all") {
-      query = query.eq("sector", sectorFilter as any);
-    }
+    if (sectorFilter !== "all") query = query.eq("sector", sectorFilter as any);
 
-    const { data } = await query;
-    setProblems(data || []);
+    const { data: problemsData, error } = await query;
+    if (error) return console.error("Failed to fetch problems:", error);
+
+    const problemsList = problemsData || [];
+    const problemIds = problemsList.map(p => p.id);
+
+    // Fetch view counts for all problems at once
+    const { data: viewsData } = await supabase
+      .from("problem_views")
+      .select("problem_id", { count: "exact" })
+      .in("problem_id", problemIds);
+
+    // Count views per problem
+    const viewsCountMap: Record<string, number> = {};
+    problemIds.forEach(id => (viewsCountMap[id] = 0));
+    (viewsData || []).forEach((row: any) => {
+      viewsCountMap[row.problem_id] = (viewsCountMap[row.problem_id] || 0) + 1;
+    });
+
+    // Combine views with problems
+    const problemsWithViews = problemsList.map(p => ({
+      ...p,
+      views_count: viewsCountMap[p.id] || 0,
+    }));
+
+    setProblems(problemsWithViews);
   };
 
+  // ------------------------------
+  // Fetch Saved Problems
+  // ------------------------------
   const fetchSavedProblems = async () => {
+    if (!user) return;
+
     const { data } = await supabase
       .from("saved_problems")
       .select("problem_id")
-      .eq("user_id", user?.id);
-    
+      .eq("user_id", user.id);
+
     setSavedProblems(new Set(data?.map(sp => sp.problem_id) || []));
   };
 
+  // ------------------------------
+  // Save / Unsave Problem
+  // ------------------------------
   const toggleSaveProblem = async (problemId: string) => {
+    if (!user) return;
+
     if (savedProblems.has(problemId)) {
       await supabase
         .from("saved_problems")
         .delete()
-        .eq("user_id", user?.id)
+        .eq("user_id", user.id)
         .eq("problem_id", problemId);
-      
+
       setSavedProblems(prev => {
         const newSet = new Set(prev);
         newSet.delete(problemId);
         return newSet;
       });
-      
+
       toast({ title: "Removed from saved problems" });
     } else {
       await supabase
         .from("saved_problems")
-        .insert({ user_id: user?.id, problem_id: problemId });
-      
+        .insert({ user_id: user.id, problem_id: problemId });
+
       setSavedProblems(prev => new Set([...prev, problemId]));
       toast({ title: "Problem saved successfully" });
     }
   };
 
+  // ------------------------------
+  // Initial Load
+  // ------------------------------
+  useEffect(() => {
+    if (user) {
+      fetchProblems();
+      fetchSavedProblems();
+    }
+  }, [user, sectorFilter]);
+
+  // ------------------------------
+  // Filtered Problems
+  // ------------------------------
   const filteredProblems = problems.filter(problem =>
     problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     problem.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -111,7 +153,7 @@ export default function Explore() {
                   <Input
                     placeholder="Search problems..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -135,11 +177,7 @@ export default function Explore() {
           {/* Problems Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {filteredProblems.map((problem, index) => (
-              <Card
-                key={problem.id}
-                className="hover-scale animate-scale-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
+              <Card key={problem.id} className="hover-scale animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex-1">
@@ -148,9 +186,7 @@ export default function Explore() {
                         <Badge variant={getStatusColor(problem.status)}>
                           {problem.status.replace("_", " ")}
                         </Badge>
-                        <Badge variant="outline" className="capitalize">
-                          {problem.sector}
-                        </Badge>
+                        <Badge variant="outline" className="capitalize">{problem.sector}</Badge>
                       </div>
                     </div>
                     <Button
@@ -164,24 +200,18 @@ export default function Explore() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-muted-foreground line-clamp-3">
-                    {problem.description}
-                  </p>
-                  
+                  <p className="text-muted-foreground line-clamp-3">{problem.description}</p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      {problem.location}
+                      <MapPin className="h-4 w-4" /> {problem.location}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {problem.views_count || 0} views
+                      <Eye className="h-4 w-4" /> {problem.views_count || 0} views
                     </div>
                   </div>
-
                   <div className="flex gap-2 pt-2">
-                    <Button 
-                      variant="default" 
+                    <Button
+                      variant="default"
                       className="flex-1"
                       onClick={() => navigate(`/problem/${problem.id}`)}
                     >

@@ -8,15 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Loader2, MapPin, Users, Target, ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
+import { Loader2, MapPin, Users, Target, ArrowLeft, Eye } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { hasRole } = useUserRole();
+  const [views, setViews] = useState<number>(0);
 
+  // Fetch problem
   const { data: problem, isLoading } = useQuery({
     queryKey: ['problem', id],
     queryFn: async () => {
@@ -25,12 +27,12 @@ export default function ProblemDetail() {
         .select('*')
         .eq('id', id)
         .single();
-
       if (error) throw error;
       return data;
     },
   });
 
+  // Fetch solutions
   const { data: solutions } = useQuery({
     queryKey: ['solutions', id],
     queryFn: async () => {
@@ -47,25 +49,33 @@ export default function ProblemDetail() {
     },
   });
 
-const incrementViews = async (problemId: string) => {
-  await supabase.rpc("increment_problem_views", { pid: problemId });
+  // Record a view in problem_views
+  const recordView = async (problemId: number, userId: string) => {
+    const { error } = await supabase
+      .from("problem_views")
+      .insert({ problem_id: problemId, user_id: userId });
 
-  const { data } = await supabase
-    .from("problems")
-    .select("views_count")
-    .eq("id", problemId)
-    .single();
+    if (error) console.error("Failed to record view:", error);
+    else console.log(`Recorded view for user ${userId} on problem ${problemId}`);
+  };
 
-  console.log("Updated views:", data?.views_count);
-};
+  // Fetch total views
+  const fetchViews = async (problemId: number) => {
+    const { count, error } = await supabase
+      .from("problem_views")
+      .select("id", { count: "exact" })
+      .eq("problem_id", problemId);
 
+    if (error) console.error("Failed to fetch views:", error);
+    else setViews(count || 0);
+  };
 
-useEffect(() => {
-  if (problem?.id) {
-    incrementViews(problem.id);
-  }
-}, [problem?.id]);
-
+  // On mount: record view and fetch updated count
+  useEffect(() => {
+    if (problem?.id && user?.id) {
+      recordView(problem.id, user.id).then(() => fetchViews(problem.id));
+    }
+  }, [problem?.id, user?.id]);
 
   if (isLoading) {
     return (
@@ -105,18 +115,18 @@ useEffect(() => {
 
           <Card className="mb-8">
             <CardHeader>
-              <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <CardTitle className="text-3xl mb-2">{problem.title}</CardTitle>
-              {(problem as any).summary && (
-                <CardDescription className="text-lg">{(problem as any).summary}</CardDescription>
-              )}
-            </div>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex-1">
+                  <CardTitle className="text-3xl mb-2">{problem.title}</CardTitle>
+                  {(problem as any).summary && (
+                    <CardDescription className="text-lg">{(problem as any).summary}</CardDescription>
+                  )}
+                </div>
                 <Badge variant={problem.status === 'validated' ? 'default' : 'secondary'}>
                   {problem.status}
                 </Badge>
               </div>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground items-center">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
                   {problem.location}
@@ -124,9 +134,13 @@ useEffect(() => {
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{problem.sector}</Badge>
                 </div>
-                {/* {problem.profiles.first_name}{" "}{problem.profiles.last_name} */}
+                <div className="flex items-center gap-1">
+                  <Eye className="h-4 w-4" />
+                  <span>{views} views</span>
+                </div>
               </div>
             </CardHeader>
+
             <CardContent className="space-y-6">
               {problem.image_url && (
                 <img
