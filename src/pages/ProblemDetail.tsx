@@ -22,10 +22,9 @@ export default function ProblemDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('problems')
-        .select('*, profiles(first_name, last_name)')
+        .select('*')
         .eq('id', id)
         .single();
-
       if (error) throw error;
       return data;
     },
@@ -124,7 +123,7 @@ useEffect(() => {
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{problem.sector}</Badge>
                 </div>
-                {problem.profiles.first_name}{" "}{problem.profiles.last_name}
+                {/* {problem.profiles.first_name}{" "}{problem.profiles.last_name} */}
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
