@@ -25,6 +25,7 @@ export default function ProblemDetail() {
         .select('*')
         .eq('id', id)
         .single();
+
       if (error) throw error;
       return data;
     },
