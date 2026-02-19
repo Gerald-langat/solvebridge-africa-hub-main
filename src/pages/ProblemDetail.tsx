@@ -49,26 +49,25 @@ export default function ProblemDetail() {
     },
   });
 
-  // Record a view in problem_views
-  const recordView = async (problemId: number, userId: string) => {
-    const { error } = await supabase
-      .from("problem_views")
-      .insert({ problem_id: problemId, user_id: userId });
+const recordView = async (problemId: number) => {
+  const { data } = await supabase.auth.getUser();
+  const uid = data.user?.id;
 
-    if (error) console.error("Failed to record view:", error);
-    else console.log(`Recorded view for user ${userId} on problem ${problemId}`);
-  };
+  if (!uid) return;
 
-  // Fetch total views
-  const fetchViews = async (problemId: number) => {
-    const { count, error } = await supabase
-      .from("problem_views")
-      .select("id", { count: "exact" })
-      .eq("problem_id", problemId);
+  const { error } = await supabase
+    .from("problem_views")
+    .insert({
+      problem_id: problemId,
+      user_id: uid,
+    });
 
-    if (error) console.error("Failed to fetch views:", error);
-    else setViews(count || 0);
-  };
+  if (error) {
+    console.error("Insert failed:", error);
+  }
+};
+
+
 
   // On mount: record view and fetch updated count
   useEffect(() => {
@@ -133,10 +132,6 @@ export default function ProblemDetail() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{problem.sector}</Badge>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  <span>{views} views</span>
                 </div>
               </div>
             </CardHeader>

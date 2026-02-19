@@ -42,7 +42,7 @@ export default function Explore() {
 
     // Fetch view counts for all problems at once
     const { data: viewsData } = await supabase
-      .from("problem_views")
+    .from("problem_views")
       .select("problem_id", { count: "exact" })
       .in("problem_id", problemIds);
 
