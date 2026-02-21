@@ -79,15 +79,18 @@ export default function Explore() {
   // ------------------------------
   // Save / Unsave Problem
   // ------------------------------
-  const toggleSaveProblem = async (problemId: string) => {
-    if (!user) return;
+const toggleSaveProblem = async (problemId: string) => {
+  if (!user) return;
 
+  try {
     if (savedProblems.has(problemId)) {
-      await supabase
+      const { error: deleteError } = await supabase
         .from("saved_problems")
         .delete()
         .eq("user_id", user.id)
         .eq("problem_id", problemId);
+
+      if (deleteError) throw deleteError;
 
       setSavedProblems(prev => {
         const newSet = new Set(prev);
@@ -97,24 +100,46 @@ export default function Explore() {
 
       toast({ title: "Removed from saved problems" });
     } else {
-      await supabase
+      const { error: insertError } = await supabase
         .from("saved_problems")
-        .insert({ user_id: user.id, problem_id: problemId });
+        .upsert(
+          { user_id: user.id, problem_id: problemId },
+          { onConflict: ["user_id", "problem_id"] }
+        );
 
-      setSavedProblems(prev => new Set([...prev, problemId]));
+      if (insertError) throw insertError;
+
+      setSavedProblems(new Set(data.map((item) => item.problem_id.toString())));
       toast({ title: "Problem saved successfully" });
     }
-  };
+  } catch (error) {
+    console.error("Error saving/unsaving problem:", error);
+    toast({ title: "Failed to save problem", description: (error as any).message });
+  }
+};
 
   // ------------------------------
   // Initial Load
   // ------------------------------
-  useEffect(() => {
-    if (user) {
-      fetchProblems();
-      fetchSavedProblems();
+useEffect(() => {
+  if (!user?.id) return;
+
+  const fetchSavedProblems = async () => {
+    const { data, error } = await supabase
+      .from("saved_problems")
+      .select("problem_id")
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Failed to fetch saved problems", error);
+      return;
     }
-  }, [user, sectorFilter]);
+
+    setSavedProblems(new Set(data.map((item) => item.problem_id)));
+  };
+
+  fetchSavedProblems();
+}, [user?.id]);
 
   // ------------------------------
   // Filtered Problems
@@ -192,10 +217,12 @@ export default function Explore() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleSaveProblem(problem.id)}
-                      className={savedProblems.has(problem.id) ? "text-primary" : ""}
+                      onClick={() => toggleSaveProblem(problem.id.toString())}
+                      className={savedProblems.has(problem.id.toString()) ? "text-primary" : ""}
                     >
-                      <Bookmark className={`h-5 w-5 ${savedProblems.has(problem.id) ? "fill-current" : ""}`} />
+                      <Bookmark
+                        className={`h-5 w-5 ${savedProblems.has(problem.id.toString()) ? "fill-current" : ""}`}
+                      />
                     </Button>
                   </div>
                 </CardHeader>

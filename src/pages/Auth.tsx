@@ -80,23 +80,28 @@ const handleSignup = async (e: React.FormEvent) => {
     const user = data.user;
 
     if (user) {
-      // 1️⃣ Save profile
-      await supabase.from("profiles").insert([
-        {
+      // 1️⃣ Upsert profile (SAFE)
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({
           id: user.id,
+          image: user.user_metadata.avatar_url ?? null,
           first_name: firstName,
           last_name: lastName,
           email: signupEmail,
-        },
-      ]);
+        });
 
-      // 2️⃣ Save role in user_roles
-      await supabase.from("user_roles").insert([
-        {
+      if (profileError) throw profileError;
+
+      // 2️⃣ Upsert role (SAFE)
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .upsert({
           user_id: user.id,
-          role: role,
-        },
-      ]);
+          role: role, // 'Innovator', 'User', etc.
+        });
+
+      if (roleError) throw roleError;
     }
 
     toast({

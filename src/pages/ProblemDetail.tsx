@@ -45,7 +45,7 @@ const { data: solutions, isLoading: solutionsLoading, error: solutionsError } = 
           last_name
         )
       `)
-      .eq('problem_id', Number(id));
+      .eq('problem_id', id);
 
     if (error) throw error;
     return data; // ✅ YOU WERE MISSING THIS
@@ -209,8 +209,11 @@ const recordView = async (problemId: number) => {
                           <div className="flex items-start justify-between">
                             <div>
                               <CardTitle className="text-lg">{solution.title}</CardTitle>
-                              <CardDescription>
-                                by {creator?.first_name} {creator?.last_name}
+                              <CardDescription className="flex items-center space-x-4">
+                                by{creator.image && <img
+                                src={creator.image ?? "/avatar-placeholder.png"}
+                                alt="Profile"
+                              />} {creator?.first_name} {creator?.last_name}
                               </CardDescription>
                             </div>
                             <Badge>{solution.status}</Badge>
