@@ -16,7 +16,6 @@ export default function ProblemDetail() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { hasRole } = useUserRole();
-  const [views, setViews] = useState<number>(0);
 
   // Fetch problem
   const { data: problem, isLoading } = useQuery({
@@ -32,22 +31,26 @@ export default function ProblemDetail() {
     },
   });
 
-  // Fetch solutions
-  const { data: solutions } = useQuery({
-    queryKey: ['solutions', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select(`
-          *,
-          creator:profiles!projects_created_by_fkey(first_name, last_name)
-        `)
-        .eq('problem_id', id);
+// Fetch solutions
+const { data: solutions, isLoading: solutionsLoading, error: solutionsError } = useQuery({
+  queryKey: ['solutions', id],
+  enabled: !!id,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        creator:profiles (
+          first_name,
+          last_name
+        )
+      `)
+      .eq('problem_id', Number(id));
 
-      if (error) throw error;
-      return data;
-    },
-  });
+    if (error) throw error;
+    return data; // ✅ YOU WERE MISSING THIS
+  },
+});
 
 const recordView = async (problemId: number) => {
   const { data } = await supabase.auth.getUser();

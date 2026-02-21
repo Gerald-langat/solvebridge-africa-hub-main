@@ -24,7 +24,7 @@ const advisors = [
     linkedin: "https://www.linkedin.com/in/rodgers-wambua-725763180/"
   },
   {
-    name: "Technical Lead",
+    name: "Gerald sang",
     role: "Technology & Innovation",
     bio: "Technical Lead with a passion for building scalable solutions that drive social impact.",
     linkedin: "https://www.linkedin.com/in/rodgers-wambua-725763180/",
