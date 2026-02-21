@@ -22,6 +22,7 @@ export default function Explore() {
   const [sectorFilter, setSectorFilter] = useState("all");
   const [savedProblems, setSavedProblems] = useState<Set<string>>(new Set());
 
+
   // ------------------------------
   // Fetch Problems + Views
   // ------------------------------
@@ -66,31 +67,28 @@ export default function Explore() {
   // Fetch Saved Problems
   // ------------------------------
   const fetchSavedProblems = async () => {
-    if (!user) return;
+    if (!user?.id) return;
 
     const { data } = await supabase
       .from("saved_problems")
       .select("problem_id")
       .eq("user_id", user.id);
 
-    setSavedProblems(new Set(data?.map(sp => sp.problem_id) || []));
+    setSavedProblems(new Set(data.map((item) => item.problem_id.toString())));
   };
 
   // ------------------------------
   // Save / Unsave Problem
   // ------------------------------
-const toggleSaveProblem = async (problemId: string) => {
-  if (!user) return;
+  const toggleSaveProblem = async (problemId: string) => {
+    if (!user?.id) return;
 
-  try {
     if (savedProblems.has(problemId)) {
-      const { error: deleteError } = await supabase
+      await supabase
         .from("saved_problems")
         .delete()
         .eq("user_id", user.id)
         .eq("problem_id", problemId);
-
-      if (deleteError) throw deleteError;
 
       setSavedProblems(prev => {
         const newSet = new Set(prev);
@@ -100,23 +98,14 @@ const toggleSaveProblem = async (problemId: string) => {
 
       toast({ title: "Removed from saved problems" });
     } else {
-      const { error: insertError } = await supabase
+      await supabase
         .from("saved_problems")
-        .upsert(
-          { user_id: user.id, problem_id: problemId },
-          { onConflict: ["user_id", "problem_id"] }
-        );
+        .insert({ user_id: user.id, problem_id: problemId });
 
-      if (insertError) throw insertError;
-
-      setSavedProblems(new Set(data.map((item) => item.problem_id.toString())));
+      setSavedProblems(prev => new Set([...prev, problemId]));
       toast({ title: "Problem saved successfully" });
     }
-  } catch (error) {
-    console.error("Error saving/unsaving problem:", error);
-    toast({ title: "Failed to save problem", description: (error as any).message });
-  }
-};
+  };
 
   // ------------------------------
   // Initial Load
@@ -124,22 +113,9 @@ const toggleSaveProblem = async (problemId: string) => {
 useEffect(() => {
   if (!user?.id) return;
 
-  const fetchSavedProblems = async () => {
-    const { data, error } = await supabase
-      .from("saved_problems")
-      .select("problem_id")
-      .eq("user_id", user.id);
-
-    if (error) {
-      console.error("Failed to fetch saved problems", error);
-      return;
-    }
-
-    setSavedProblems(new Set(data.map((item) => item.problem_id)));
-  };
-
+  fetchProblems();
   fetchSavedProblems();
-}, [user?.id]);
+}, [user?.id, sectorFilter]);
 
   // ------------------------------
   // Filtered Problems
@@ -157,6 +133,7 @@ useEffect(() => {
       default: return "destructive";
     }
   };
+
 
   return (
     <ProtectedRoute>
@@ -217,11 +194,11 @@ useEffect(() => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleSaveProblem(problem.id.toString())}
-                      className={savedProblems.has(problem.id.toString()) ? "text-primary" : ""}
+                      onClick={() => toggleSaveProblem(problem.id)}
+                      className={savedProblems.has(problem.id) ? "text-primary" : ""}
                     >
                       <Bookmark
-                        className={`h-5 w-5 ${savedProblems.has(problem.id.toString()) ? "fill-current" : ""}`}
+                        className={`h-5 w-5 ${savedProblems.has(problem.id) ? "fill-current" : ""}`}
                       />
                     </Button>
                   </div>
