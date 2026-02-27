@@ -37,7 +37,6 @@ export default function Partners() {
         notes: data.notes,
         type: data.type,
         status: "pending",
-        access_level: "read_only",
       });
 
       if (error) throw error;
