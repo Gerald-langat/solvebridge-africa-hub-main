@@ -93,11 +93,17 @@ export default function Partners() {
 const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  // Determine initial status based on access_level
-  const partnerData = {
-    ...formData,
-    status: formData.access_level === "full_access" ? "active" : "pending",
-  };
+  const statusMap: Record<string, string> = {
+  full_access: "approved",
+  write_access: "pending",
+  read_only: "pending",
+};
+
+const partnerData = {
+  ...formData,
+  status: statusMap[formData.access_level],
+};
+
 
   createPartner.mutate(partnerData);
 };
