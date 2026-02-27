@@ -28,6 +28,7 @@ export default function Partners() {
     access_level: "",
     notes: "",
     status: "active",
+    read_only: null,
   });
 
   const { data: partners, isLoading } = useQuery({
@@ -63,6 +64,7 @@ export default function Partners() {
         access_level: "",
         notes: "",
         status: "active",
+        read_only: null,
       });
     },
     onError: (error: any) => {
