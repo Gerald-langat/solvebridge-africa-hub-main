@@ -64,17 +64,23 @@ export const HowItWorks = () => {
   const [stats, setStats] = useState({
       submittedProblems: 0,
       innovators: 0,
+      mvpCount: 0,
+      partnersCount: 0,
     });
   
     // Fetch stats from Supabase
     const fetchStats = async () => {
       const { data: problems } = await supabase.from("problems").select("*");
-      const { data: profiles } = await supabase.from("profiles").select("*");
-      const innovators = profiles?.filter((p:any) => p.role === "innovator").length || 0;
+      const { data: mvps } = await supabase.from("projects").select("*");
+      const { data: patners } = await supabase.from("partners").select("*");
+      const { data: roles } = await supabase.from("user_roles").select("*");
+      const innovators = roles?.filter((r:any) => r.role === "Innovator").length || 0;
   
       setStats({
         submittedProblems: problems?.length || 0,
         innovators: innovators,
+        mvpCount: mvps?.length || 0,
+        partnersCount: patners?.length || 0,
       });
     };
   
@@ -85,8 +91,8 @@ export const HowItWorks = () => {
    const metrics = [
     { label: "Problems Submitted", value: stats.submittedProblems },
     { label: "Innovators Onboarded", value: stats.innovators },
-    { label: "MVPs Built", value: "20", suffix: "+" },
-    { label: "Partnerships Formed", value: "50", suffix: "+" },
+    { label: "MVPs Built", value: stats.mvpCount },
+    { label: "Partnerships Formed", value: stats.partnersCount },
   ];
 
   return (
