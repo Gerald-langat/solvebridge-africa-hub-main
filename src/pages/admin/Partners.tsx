@@ -94,10 +94,22 @@ export default function Partners() {
     return data.publicUrl;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createPartner.mutate(formData);
-  };
+const statusMap = {
+  full_access: "active",
+  write_access: "pending",
+};
+
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const status = statusMap[formData.access_level] ?? null;
+
+  createPartner.mutate({
+    ...formData,
+    status,
+  });
+};
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -179,36 +191,36 @@ export default function Partners() {
                 </div>
 
                   <div className="space-y-2">
-  <Label>Upload Supporting Image (Optional)</Label>
+              <Label>Upload Supporting Image (Optional)</Label>
 
-  {/* Hidden file input */}
-  <input
-    type="file"
-    id="imageFile"
-    accept="image/*"
-    hidden
-    onChange={async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
+              {/* Hidden file input */}
+              <input
+                type="file"
+                id="imageFile"
+                accept="image/*"
+                hidden
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
 
-      try {
-        toast({ title: "Uploading image..." });
+                  try {
+                    toast({ title: "Uploading image..." });
 
-        const url = await uploadImage(file);
-        setFormData({ ...formData, logo_url: url });
+                    const url = await uploadImage(file);
+                    setFormData({ ...formData, logo_url: url });
 
-        toast({ title: "Image uploaded successfully ✅" });
-      } catch (err: any) {
-        toast({
-          title: "Upload failed",
-          description: err.message,
-          variant: "destructive",
-        });
-      }
-    }}
-  />
+                    toast({ title: "Image uploaded successfully ✅" });
+                  } catch (err: any) {
+                    toast({
+                      title: "Upload failed",
+                      description: err.message,
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              />
 
-  <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
     {/* URL input optional */}
     <Input
       placeholder="Or paste image URL"
@@ -244,7 +256,7 @@ export default function Partners() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="read_only">Read Only</SelectItem>
-                      <SelectItem value="write">Write Access</SelectItem>
+                      <SelectItem value="write_access">Write Access</SelectItem>
                       <SelectItem value="full_access">Full Access</SelectItem>
                     </SelectContent>
                   </Select>
