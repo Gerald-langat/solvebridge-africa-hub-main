@@ -94,9 +94,10 @@ export default function Partners() {
     return data.publicUrl;
   };
 
-const statusMap = {
+const statusMap: Record<string, string | null> = {
   full_access: "active",
   write_access: "pending",
+  read_only: null,
 };
 
 const handleSubmit = (e: React.FormEvent) => {
