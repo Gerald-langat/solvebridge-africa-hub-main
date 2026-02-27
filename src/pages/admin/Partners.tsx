@@ -90,10 +90,17 @@ export default function Partners() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createPartner.mutate(formData);
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // Determine initial status based on access_level
+  const partnerData = {
+    ...formData,
+    status: formData.access_level === "full_access" ? "active" : "pending",
   };
+
+  createPartner.mutate(partnerData);
+};
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -113,18 +120,20 @@ export default function Partners() {
     }
   };
 
-const approvePartner = async (id: string, access: string) => {
+const approvePartner = async (partnerId: string, accessLevel: string) => {
+
+  if (user.role !== "Super_admin") {
+    throw new Error("Only super admins can approve partners");
+  }
+
   await supabase
     .from("partners")
     .update({
       status: "active",
-      access_level: access,
+      access_level: accessLevel,
     })
-    .eq("id", id);
+    .eq("id", partnerId);
 };
-
-
-
 
   return (
     <DashboardLayout>
@@ -383,15 +392,15 @@ const approvePartner = async (id: string, access: string) => {
                           {partner.access_level?.replace("_", " ") || "read only"}
                         </Badge>
                       )}
-                       {partner.status === "pending" && (
-                          <Button
-                            size="sm"
-                            className="bg-gradient-primary"
-                            onClick={() => approvePartner(partner.id, "full_access")}
-                          >
-                            Approve
-                          </Button>
-                        )}
+                      {partner.status === "pending" && user.role === "Admin" && (
+  <Button
+    size="sm"
+    className="bg-gradient-primary"
+    onClick={() => approvePartner(partner.id, "full_access")}
+  >
+    Approve
+  </Button>
+)}
                     </div>
                    
                   </div>
