@@ -3,15 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
 export type UserRole =
-  | "super_admin"
-  | "moderator"
-  | "program_manager"
-  | "partner"
-  | "community_ambassador"
-  | "read_only_viewer"
-  | "problem_submitter"
-  | "innovator"
-  | "mentor";
+  | "Super_admin"
+  | "Moderator"
+  | "Program_manager"
+  | "Partner"
+  | "Community_ambassador"
+  | "Admin"
+  | "Contributor"
+  | "Innovator"
+  | "Mentor";
 
 export function useUserRole() {
   const { user, loading: authLoading } = useAuth();
@@ -61,7 +61,7 @@ export function useUserRole() {
 
   const isAdmin =
     roles !== null &&
-    hasAnyRole(["super_admin", "moderator", "program_manager", "read_only_viewer"]);
+    hasAnyRole(["Super_admin", "Moderator", "Program_manager", "Admin"]);
 
   return { roles, loading, hasRole, hasAnyRole, isAdmin };
 }
