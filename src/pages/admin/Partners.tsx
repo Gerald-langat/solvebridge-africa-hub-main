@@ -12,8 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Building2, Mail, User, Shield, Upload } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { Plus, Building2, Mail, User, Shield } from "lucide-react";
 
 export default function Partners() {
   const { toast } = useToast();
@@ -27,29 +26,6 @@ export default function Partners() {
     access_level: "read_only",
     notes: "",
   });
-    const { user } = useAuth();
-  
-  const uploadImage = async (file: File) => {
-    if (!user) throw new Error("Not authenticated");
-  
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-  
-    const { error } = await supabase.storage
-      .from("problem-images")
-      .upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-  
-    if (error) throw error;
-  
-    const { data } = supabase.storage
-      .from("problem-images")
-      .getPublicUrl(fileName);
-  
-    return data.publicUrl;
-  };
 
   const { data: partners, isLoading } = useQuery({
     queryKey: ["partners"],
@@ -90,23 +66,10 @@ export default function Partners() {
     },
   });
 
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const statusMap: Record<string, string> = {
-  full_access: "active",
-  write_access: "pending",
-  read_only: "pending",
-};
-
-const partnerData = {
-  ...formData,
-  status: statusMap[formData.access_level] || "pending",
-};
-
-createPartner.mutate(partnerData);
-
-};
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createPartner.mutate(formData);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -126,19 +89,14 @@ createPartner.mutate(partnerData);
     }
   };
 
-const approvePartner = async (partnerId: string, accessLevel: string) => {
-
-  if (user.role !== "Super_admin") {
-    throw new Error("Only super admins can approve partners");
-  }
-
+const approvePartner = async (id: string, access: string) => {
   await supabase
     .from("partners")
     .update({
       status: "active",
-      access_level: accessLevel,
+      access_level: access,
     })
-    .eq("id", partnerId);
+    .eq("id", id);
 };
 
   return (
@@ -202,62 +160,15 @@ const approvePartner = async (partnerId: string, accessLevel: string) => {
                   </div>
                 </div>
 
-                  <div className="space-y-2">
-                  <Label>Logo URL</Label>
-                
-                  {/* Hidden file input */}
-                  <input
-                    type="file"
-                    id="imageFile"
-                    accept="image/*"
-                    hidden
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                
-                      try {
-                        toast({ title: "Uploading image..." });
-                
-                        const url = await uploadImage(file);
-                        setFormData({ ...formData, logo_url: url });
-                
-                        toast({ title: "Image uploaded successfully ✅" });
-                      } catch (err: any) {
-                        toast({
-                          title: "Upload failed",
-                          description: err.message,
-                          variant: "destructive",
-                        });
-                      }
-                    }}
+                <div className="space-y-2">
+                  <Label htmlFor="logo_url">Logo URL</Label>
+                  <Input
+                    id="logo_url"
+                    type="url"
+                    value={formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    placeholder="https://example.com/logo.png"
                   />
-                
-                  <div className="flex items-center gap-2">
-                    {/* URL input optional */}
-                    <Input
-                      placeholder="Or paste logo URL"
-                      value={formData.logo_url}
-                      onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                    />
-                
-                    {/* Upload icon */}
-                    <button
-                      type="button"
-                      onClick={() => document.getElementById("imageFile")?.click()}
-                      className="p-2 border rounded-md hover:bg-muted cursor-pointer"
-                    >
-                      <Upload className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  </div>
-                
-                  {/* Preview */}
-                  {formData.logo_url && (
-                    <img
-                      src={formData.logo_url}
-                      alt="Preview"
-                      className="mt-2 rounded-lg max-h-48 object-cover border"
-                    />
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -387,28 +298,21 @@ const approvePartner = async (partnerId: string, accessLevel: string) => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      {/* Status Badge */}
-                      <Badge className={getStatusColor(partner.status || "pending")}>
-                        {partner.status || "pending"}
+                      <Badge className={getStatusColor(partner.status || "active")}>
+                        {partner.status || "active"}
                       </Badge>
-
-                      {/* Access Badge: only show if active */}
-                      {partner.status === "active" && (
-                        <Badge className={getAccessLevelColor(partner.access_level || "read_only")}>
-                          {partner.access_level?.replace("_", " ") || "read only"}
-                        </Badge>
-                      )}
-                      {partner.status === "pending" && (
-                            <Button
-                              size="sm"
-                              className="bg-gradient-primary"
-                              onClick={() => approvePartner(partner.id, "full_access")}
-                            >
-                              Approve
-                            </Button>
-                          )}
+                      <Badge className={getAccessLevelColor(partner.access_level || "read_only")}>
+                        {partner.access_level?.replace("_", " ") || "read only"}
+                      </Badge>
                     </div>
-                   
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => approvePartner(partner.id, "full_access")}
+                      disabled={partner.status === "active" && partner.access_level === "full_access"}
+                    >
+                      Approve
+                    </Button>
                   </div>
                 </CardHeader>
                 {partner.notes && (
@@ -419,7 +323,6 @@ const approvePartner = async (partnerId: string, accessLevel: string) => {
                     </p>
                   </CardContent>
                 )}
-                
               </Card>
             ))
           ) : (
