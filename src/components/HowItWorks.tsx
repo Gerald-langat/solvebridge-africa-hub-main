@@ -70,18 +70,29 @@ export const HowItWorks = () => {
   
     // Fetch stats from Supabase
     const fetchStats = async () => {
-      const { data: problems } = await supabase.from("problems").select("*");
-      const { data: mvps } = await supabase.from("projects").select("*");
-      const { data: patners } = await supabase.from("partners").select("*");
-      const { data: roles } = await supabase.from("user_roles").select("*");
-      const innovators = roles?.filter((r:any) => r.role === "Innovator").length || 0;
-  
-      setStats({
-        submittedProblems: problems?.length || 0,
-        innovators: innovators,
-        mvpCount: mvps?.length || 0,
-        partnersCount: patners?.length || 0,
-      });
+   const { count: problemsCount } = await supabase
+  .from("problems")
+  .select("*", { count: "exact", head: true });
+
+const { count: mvpCount } = await supabase
+  .from("projects")
+  .select("*", { count: "exact", head: true });
+
+const { count: partnersCount } = await supabase
+  .from("partners")
+  .select("*", { count: "exact", head: true });
+
+const { count: innovators } = await supabase
+  .from("user_roles")
+  .select("*", { count: "exact", head: true })
+  .eq("role", "innovator");
+
+setStats({
+  submittedProblems: problemsCount || 0,
+  innovators: innovators || 0,
+  mvpCount: mvpCount || 0,
+  partnersCount: partnersCount || 0,
+});
     };
   
     useEffect(() => {
