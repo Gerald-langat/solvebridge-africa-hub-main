@@ -372,21 +372,26 @@ const approvePartner = async (id: string, access: string) => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Badge className={getStatusColor(partner.status || "active")}>
-                        {partner.status || "active"}
+                      {/* Status Badge */}
+                      <Badge className={getStatusColor(partner.status || "pending")}>
+                        {partner.status || "pending"}
                       </Badge>
-                      <Badge className={getAccessLevelColor(partner.access_level || "read_only")}>
-                        {partner.access_level?.replace("_", " ") || "read only"}
-                      </Badge>
-                        {(partner.status !== "active" || partner.access_level !== "full_access") && (
-            <Button
-              size="sm"
-              className="bg-gradient-primary"
-              onClick={() => approvePartner(partner.id, "full_access")}
-            >
-              Approve
-            </Button>
-          )}
+
+                      {/* Access Badge: only show if active */}
+                      {partner.status === "active" && (
+                        <Badge className={getAccessLevelColor(partner.access_level || "read_only")}>
+                          {partner.access_level?.replace("_", " ") || "read only"}
+                        </Badge>
+                      )}
+                       {partner.status === "pending" && (
+                          <Button
+                            size="sm"
+                            className="bg-gradient-primary"
+                            onClick={() => approvePartner(partner.id, "full_access")}
+                          >
+                            Approve
+                          </Button>
+                        )}
                     </div>
                    
                   </div>
