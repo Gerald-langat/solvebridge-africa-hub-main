@@ -25,7 +25,7 @@ export default function Partners() {
     contact_name: "",
     contact_email: "",
     logo_url: "",
-    access_level: null,
+    access_level: "read_only",
     notes: "",
     status: "active",
   });
@@ -60,7 +60,7 @@ export default function Partners() {
         contact_name: "",
         contact_email: "",
         logo_url: "",
-        access_level: null,
+        access_level: "read_only",
         notes: "",
         status: "active",
       });
