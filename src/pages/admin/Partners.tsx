@@ -129,116 +129,256 @@ const approvePartner = async (id: string, access: string) => {
   return (
     <DashboardLayout>
       <div className="space-y-6 animate-fade-in">
-
-  {/* Header + Add Partner */}
-  <div className="flex justify-between items-center">
-    <div>
-      <h1 className="text-3xl font-bold bg-gradient-accent bg-clip-text text-transparent">
-        Partners Management
-      </h1>
-      <p className="text-muted-foreground mt-2">
-        Manage partner organizations and their access levels
-      </p>
-    </div>
-
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-gradient-primary flex items-center gap-2">
-          <Plus className="h-4 w-4" /> Add Partner
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        {/* Add Partner Form */}
-      </DialogContent>
-    </Dialog>
-  </div>
-
-  {/* Stats Overview */}
-  <div className="grid gap-4 md:grid-cols-4">
-    {/* Total Partners */}
-    <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer">
-      <CardHeader className="flex justify-between items-center pb-2">
-        <CardTitle className="text-sm font-medium">Total Partners</CardTitle>
-        <Building2 className="h-4 w-4 text-primary" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-primary">{partners?.length || 0}</div>
-      </CardContent>
-    </Card>
-
-    {/* Active Partners */}
-    <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer">
-      <CardHeader className="flex justify-between items-center pb-2">
-        <CardTitle className="text-sm font-medium">Active Partners</CardTitle>
-        <Building2 className="h-4 w-4 text-accent" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-accent">
-          {partners?.filter(p => p.status === "active").length || 0}
-        </div>
-      </CardContent>
-    </Card>
-
-    {/* Pending */}
-    <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer">
-      <CardHeader className="flex justify-between items-center pb-2">
-        <CardTitle className="text-sm font-medium">Pending</CardTitle>
-        <User className="h-4 w-4 text-secondary" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-secondary">
-          {partners?.filter(p => p.status === "pending").length || 0}
-        </div>
-      </CardContent>
-    </Card>
-
-    {/* Full Access */}
-    <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer">
-      <CardHeader className="flex justify-between items-center pb-2">
-        <CardTitle className="text-sm font-medium">Full Access</CardTitle>
-        <Shield className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">
-          {partners?.filter(p => p.access_level === "full_access").length || 0}
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-
-  {/* Partners List */}
-  <div className="space-y-4">
-    {partners?.map(partner => (
-      <Card
-        key={partner.id}
-        className="shadow-soft hover:shadow-medium transition-shadow flex flex-col md:flex-row items-center justify-between p-4 gap-4"
-      >
-        {/* Logo + Info */}
-        <div className="flex items-center gap-4 flex-1">
-          {partner.logo_url && (
-            <img
-              src={partner.logo_url}
-              alt={partner.name}
-              className="w-16 h-16 object-contain rounded-lg border"
-            />
-          )}
-          <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold">{partner.name}</CardTitle>
-            <CardDescription className="flex gap-2 text-sm text-muted-foreground">
-              {partner.contact_name && <span className="flex items-center gap-1"><User className="h-3 w-3" />{partner.contact_name}</span>}
-              {partner.contact_email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{partner.contact_email}</span>}
-            </CardDescription>
-            {partner.notes && <p className="text-xs text-muted-foreground mt-1">{partner.notes}</p>}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-accent bg-clip-text text-transparent">
+              Partners Management
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Manage partner organizations and their access levels
+            </p>
           </div>
+          
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-primary">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Partner
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add New Partner</DialogTitle>
+                <DialogDescription>
+                  Register a new partner organization
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Organization Name *</Label>
+                  <Input
+                    id="name"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Impact Hub Nairobi"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="contact_name">Contact Person</Label>
+                    <Input
+                      id="contact_name"
+                      value={formData.contact_name}
+                      onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contact_email">Contact Email</Label>
+                    <Input
+                      id="contact_email"
+                      type="email"
+                      value={formData.contact_email}
+                      onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                      placeholder="contact@organization.org"
+                    />
+                  </div>
+                </div>
+
+                  <div className="space-y-2">
+                  <Label>Logo URL</Label>
+                
+                  {/* Hidden file input */}
+                  <input
+                    type="file"
+                    id="imageFile"
+                    accept="image/*"
+                    hidden
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                
+                      try {
+                        toast({ title: "Uploading image..." });
+                
+                        const url = await uploadImage(file);
+                        setFormData({ ...formData, logo_url: url });
+                
+                        toast({ title: "Image uploaded successfully ✅" });
+                      } catch (err: any) {
+                        toast({
+                          title: "Upload failed",
+                          description: err.message,
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  />
+                
+                  <div className="flex items-center gap-2">
+                    {/* URL input optional */}
+                    <Input
+                      placeholder="Or paste logo URL"
+                      value={formData.logo_url}
+                      onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    />
+                
+                    {/* Upload icon */}
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById("imageFile")?.click()}
+                      className="p-2 border rounded-md hover:bg-muted cursor-pointer"
+                    >
+                      <Upload className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </div>
+                
+                  {/* Preview */}
+                  {formData.logo_url && (
+                    <img
+                      src={formData.logo_url}
+                      alt="Preview"
+                      className="mt-2 rounded-lg max-h-48 object-cover border"
+                    />
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="access_level">Access Level</Label>
+                  <Select value={formData.access_level} onValueChange={(value) => setFormData({ ...formData, access_level: value })}>
+                    <SelectTrigger id="access_level">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="read_only">Read Only</SelectItem>
+                      <SelectItem value="write">Write Access</SelectItem>
+                      <SelectItem value="full_access">Full Access</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Internal Notes</Label>
+                  <Textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Any internal notes about this partner..."
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button type="submit" className="flex-1 bg-gradient-primary">
+                    Add Partner
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
-        {/* Status + Access + Approve */}
-        <div className="flex flex-col md:flex-row items-center gap-2">
-          <Badge className={getStatusColor(partner.status || "pending")}>{partner.status || "pending"}</Badge>
-          <Badge className={getAccessLevelColor(partner.access_level || "read_only")}>
-            {partner.access_level?.replace("_", " ") || "read only"}
-          </Badge>
-          {(partner.status !== "active" || partner.access_level !== "full_access") && (
+        {/* Stats Overview */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card className="shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Partners</CardTitle>
+              <Building2 className="h-4 w-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">{partners?.length || 0}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Partners</CardTitle>
+              <Building2 className="h-4 w-4 text-accent" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-accent">
+                {partners?.filter(p => p.status === "active").length || 0}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending</CardTitle>
+              <User className="h-4 w-4 text-secondary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-secondary">
+                {partners?.filter(p => p.status === "pending").length || 0}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Full Access</CardTitle>
+              <Shield className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {partners?.filter(p => p.access_level === "full_access").length || 0}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Partners List */}
+        <div className="space-y-4">
+          {isLoading ? (
+            <Card className="shadow-soft">
+              <CardContent className="p-8 text-center text-muted-foreground">
+                Loading partners...
+              </CardContent>
+            </Card>
+          ) : partners && partners.length > 0 ? (
+            partners.map((partner) => (
+              <Card key={partner.id} className="shadow-soft hover:shadow-medium transition-shadow">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-4">
+                      {partner.logo_url && (
+                        <img 
+                          src={partner.logo_url} 
+                          alt={partner.name}
+                          className="w-16 h-16 object-contain rounded-lg border"
+                        />
+                      )}
+                      <div className="space-y-1">
+                        <CardTitle className="text-xl">{partner.name}</CardTitle>
+                        <CardDescription className="flex items-center gap-2">
+                          {partner.contact_name && (
+                            <span className="flex items-center gap-1">
+                              <User className="h-3 w-3" />
+                              {partner.contact_name}
+                            </span>
+                          )}
+                          {partner.contact_email && (
+                            <span className="flex items-center gap-1">
+                              <Mail className="h-3 w-3" />
+                              {partner.contact_email}
+                            </span>
+                          )}
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge className={getStatusColor(partner.status || "active")}>
+                        {partner.status || "active"}
+                      </Badge>
+                      <Badge className={getAccessLevelColor(partner.access_level || "read_only")}>
+                        {partner.access_level?.replace("_", " ") || "read only"}
+                      </Badge>
+                        {(partner.status !== "active" || partner.access_level !== "full_access") && (
             <Button
               size="sm"
               className="bg-gradient-primary"
@@ -247,11 +387,30 @@ const approvePartner = async (id: string, access: string) => {
               Approve
             </Button>
           )}
+                    </div>
+                   
+                  </div>
+                </CardHeader>
+                {partner.notes && (
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{partner.notes}</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Added {new Date(partner.created_at).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                )}
+                
+              </Card>
+            ))
+          ) : (
+            <Card className="shadow-soft">
+              <CardContent className="p-8 text-center text-muted-foreground">
+                No partners yet. Add your first partner organization!
+              </CardContent>
+            </Card>
+          )}
         </div>
-      </Card>
-    ))}
-  </div>
-</div>
+      </div>
     </DashboardLayout>
   );
 }
