@@ -36,7 +36,6 @@ export default function Partners() {
         contact_email: data.contact_email,
         notes: data.notes,
         type: data.type,
-          access_level: null, 
         status: "pending",
       });
 
