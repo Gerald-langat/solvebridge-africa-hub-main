@@ -94,7 +94,7 @@ const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
   const statusMap: Record<string, string> = {
-  full_access: "approved",
+  full_access: "active",
   write_access: "pending",
   read_only: "pending",
 };
