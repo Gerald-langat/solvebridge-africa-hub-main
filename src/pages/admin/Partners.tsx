@@ -25,10 +25,9 @@ export default function Partners() {
     contact_name: "",
     contact_email: "",
     logo_url: "",
-    access_level: "",
+    access_level: null,
     notes: "",
     status: "active",
-    read_only: null,
   });
 
   const { data: partners, isLoading } = useQuery({
@@ -61,10 +60,9 @@ export default function Partners() {
         contact_name: "",
         contact_email: "",
         logo_url: "",
-        access_level: "",
+        access_level: null,
         notes: "",
         status: "active",
-        read_only: null,
       });
     },
     onError: (error: any) => {
