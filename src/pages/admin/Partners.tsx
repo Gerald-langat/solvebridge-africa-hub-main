@@ -187,16 +187,6 @@ const approvePartner = async (id: string, access: string) => {
                   </div>
                 </div>
 
-                {/* <div className="space-y-2">
-                  <Label htmlFor="logo_url">Logo URL</Label>
-                  <Input
-                    id="logo_url"
-                    type="url"
-                    value={formData.logo_url}
-                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                    placeholder="https://example.com/logo.png"
-                  />
-                </div> */}
                   <div className="space-y-2">
                   <Label>Logo URL</Label>
                 
@@ -389,14 +379,7 @@ const approvePartner = async (id: string, access: string) => {
                         {partner.access_level?.replace("_", " ") || "read only"}
                       </Badge>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => approvePartner(partner.id, "full_access")}
-                      disabled={partner.status === "active" && partner.access_level === "full_access"}
-                    >
-                      Approve
-                    </Button>
+                    
                   </div>
                 </CardHeader>
                 {partner.notes && (
@@ -407,6 +390,14 @@ const approvePartner = async (id: string, access: string) => {
                     </p>
                   </CardContent>
                 )}
+                <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => approvePartner(partner.id, "full_access")}
+                      disabled={partner.status === "active" && partner.access_level === "full_access"}
+                    >
+                      Approve
+                    </Button>
               </Card>
             ))
           ) : (
