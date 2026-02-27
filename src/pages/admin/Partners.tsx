@@ -392,15 +392,15 @@ const approvePartner = async (partnerId: string, accessLevel: string) => {
                           {partner.access_level?.replace("_", " ") || "read only"}
                         </Badge>
                       )}
-                      {partner.status === "pending" && user.role === "Admin" && (
-  <Button
-    size="sm"
-    className="bg-gradient-primary"
-    onClick={() => approvePartner(partner.id, "full_access")}
-  >
-    Approve
-  </Button>
-)}
+                      {partner.status === "pending" && (
+                            <Button
+                              size="sm"
+                              className="bg-gradient-primary"
+                              onClick={() => approvePartner(partner.id, "full_access")}
+                            >
+                              Approve
+                            </Button>
+                          )}
                     </div>
                    
                   </div>
