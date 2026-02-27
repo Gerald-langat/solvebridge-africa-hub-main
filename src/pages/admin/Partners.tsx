@@ -101,11 +101,11 @@ const handleSubmit = (e: React.FormEvent) => {
 
 const partnerData = {
   ...formData,
-  status: statusMap[formData.access_level],
+  status: statusMap[formData.access_level] || "pending",
 };
 
+createPartner.mutate(partnerData);
 
-  createPartner.mutate(partnerData);
 };
 
   const getStatusColor = (status: string) => {
