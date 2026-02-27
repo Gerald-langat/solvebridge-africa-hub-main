@@ -111,7 +111,7 @@ export default function Partners() {
   const getAccessLevelColor = (level: string) => {
     switch (level) {
       case "full_access": return "bg-accent text-accent-foreground";
-      case "write": return "bg-primary text-primary-foreground";
+      case "write_only": return "bg-primary text-primary-foreground";
       case "read_only": return "bg-muted text-muted-foreground";
       default: return "bg-muted text-muted-foreground";
     }
