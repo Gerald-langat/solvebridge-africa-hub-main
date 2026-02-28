@@ -201,7 +201,7 @@ useEffect(() => {
                 >
                 <CardHeader className="relative">
                       <span
-                        className={`text-sm font-medium px-2 py-1 rounded absolute left-0 top-0 ${
+                        className={`text-sm font-medium px-2 py-1 rounded-tl-md absolute left-0 top-0 ${
                           item.type === "bounty"
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-blue-100 text-blue-800"
