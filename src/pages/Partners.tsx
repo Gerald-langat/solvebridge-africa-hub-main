@@ -125,7 +125,7 @@ export default function Partners() {
                     Sponsor a Lab
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <a href="mailto:partnerships@solvebridge.africa">
+                    <a href="mailto:info@solvebridge.africa">
                       Contact Partnership Team
                     </a>
                   </Button>
@@ -137,7 +137,7 @@ export default function Partners() {
                     href="mailto:partnerships@solvebridge.africa" 
                     className="text-primary font-semibold hover:underline"
                   >
-                    partnerships@solvebridge.africa
+                    info@solvebridge.africa
                   </a>
                 </div>
               </CardContent>

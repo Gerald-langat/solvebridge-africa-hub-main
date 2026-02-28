@@ -70,11 +70,20 @@ export default function AdminDashboard() {
   };
 
   const fetchRecentActivity = async () => {
-    const { data } = await supabase
-      .from('audit_logs')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10);
+   const logAudit = async ({
+  action,
+  entityType,
+  entityId,
+  metadata = {},
+}) => {
+  await supabase.from("audit_logs").insert({
+    actor_id: user.id,
+    action,
+    entity_type: entityType,
+    entity_id: entityId,
+    metadata,
+  });
+};
     
     setRecentActivity(data || []);
   };
