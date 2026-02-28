@@ -52,17 +52,17 @@ const { data: solutions, isLoading: solutionsLoading, error: solutionsError } = 
   },
 });
 
-const recordView = async (problemId: number) => {
+const recordView = async (bountyId: number) => {
   const { data } = await supabase.auth.getUser();
   const uid = data.user?.id;
 
   if (!uid) return;
 
   const { error } = await supabase
-    .from("bounty_views")
+    .from("problem_views")
     .insert({
-      bounty_id: problemId,
-      created_by: uid,
+      id: bountyId,
+      user_id: uid,
     });
 
   if (error) {
@@ -89,12 +89,12 @@ const recordView = async (problemId: number) => {
     );
   }
 
-  if (!problem && !isLoading) {
+  if (!bounty && !isLoading) {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold mb-4">Problem Not Found</h2>
-          <Button onClick={() => navigate('/explore')}>Back to Problems</Button>
+          <h2 className="text-2xl font-bold mb-4">Bounty Not Found</h2>
+          <Button onClick={() => navigate('/explore')}>Back to Bounties</Button>
         </div>
       </DashboardLayout>
     );
@@ -119,68 +119,68 @@ const recordView = async (problemId: number) => {
             <CardHeader>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex-1">
-                  <CardTitle className="text-3xl mb-2">{problem.title}</CardTitle>
-                  {(problem as any).summary && (
-                    <CardDescription className="text-lg">{(problem as any).summary}</CardDescription>
+                  <CardTitle className="text-3xl mb-2">{bounty.title}</CardTitle>
+                  {(bounty as any).summary && (
+                    <CardDescription className="text-lg">{(bounty as any).summary}</CardDescription>
                   )}
                 </div>
-                <Badge variant={problem.status === 'validated' ? 'default' : 'secondary'}>
-                  {problem.status}
+                <Badge variant={bounty.status === 'validated' ? 'default' : 'secondary'}>
+                  {bounty.status}
                 </Badge>
               </div>
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground items-center">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  {problem.location}
+                  {bounty.target_regions}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{problem.sector}</Badge>
+                  <Badge variant="outline">{bounty.tags}</Badge>
                 </div>
               </div>
             </CardHeader>
 
             <CardContent className="space-y-6">
-              {problem.image_url && (
+              {bounty.image_url && (
                 <img
-                  src={problem.image_url}
-                  alt={problem.title}
+                  src={bounty.image_url}
+                  alt={bounty.title}
                   className="w-full h-64 object-cover rounded-lg"
                 />
               )}
 
               <div>
-                <h3 className="text-xl font-semibold mb-3">Problem Description</h3>
-                <p className="text-foreground leading-relaxed">{problem.description}</p>
+                <h3 className="text-xl font-semibold mb-3">bounty Description</h3>
+                <p className="text-foreground leading-relaxed">{bounty.description}</p>
               </div>
 
-              {(problem as any).target_audience && (
+              {(bounty as any).target_audience && (
                 <div>
                   <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
                     <Users className="h-5 w-5" />
                     Target Audience
                   </h3>
-                  <p className="text-foreground">{(problem as any).target_audience}</p>
+                  <p className="text-foreground">{(bounty as any).target_audience}</p>
                 </div>
               )}
 
-              {(problem as any).impact_scale && (
+              {(bounty as any).impact_scale && (
                 <div>
                   <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
                     <Target className="h-5 w-5" />
                     Impact Scale
                   </h3>
-                  <Badge variant="secondary">{(problem as any).impact_scale}</Badge>
+                  <Badge variant="secondary">{(bounty as any).impact_scale}</Badge>
                 </div>
               )}
 
-              {(problem as any).stakeholders && (
+              {(bounty as any).stakeholders && (
                 <div>
                   <h3 className="text-xl font-semibold mb-3">Key Stakeholders</h3>
-                  <p className="text-foreground">{(problem as any).stakeholders}</p>
+                  <p className="text-foreground">{(bounty as any).stakeholders}</p>
                 </div>
               )}
 
-              {canProposeSolution && problem.status === 'validated' && (
+              {canProposeSolution && bounty.status === 'validated' && (
                 <div className="pt-6 border-t">
                   <Button
                     size="lg"
