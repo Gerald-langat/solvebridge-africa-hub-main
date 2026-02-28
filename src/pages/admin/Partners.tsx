@@ -92,21 +92,22 @@ export default function Partners() {
     return data.publicUrl;
   };
 
-// const statusMap: Record<string, string | null> = {
-//   full_access: "active",
-//   write_access: "pending",
-//   read_only: null,
-// };
+const statusMap = {
+  full_access: "active",
+  write_access: "pending", // or "active" if no approval workflow
+  read_only: "active",
+};
+
 
 const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
 
-  // const status = statusMap[formData.access_level] ?? null;
+  const status = statusMap[formData.access_level] ?? null;
 
-  // createPartner.mutate({
-  //   ...formData,
-  //   status,
-  // });
+  createPartner.mutate({
+    ...formData,
+    status,
+  });
 };
 
 
