@@ -199,30 +199,39 @@ useEffect(() => {
                   }`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                <CardHeader>
-                  <div className="flex justify-between items-start gap-4">
-                    <span className={`text-sm font-medium px-2 py-1 rounded absolute left-0 top-0 ${item.type === "bounty" ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"}`}>{item.type}</span>
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant={getStatusColor(item.status)}>
-                          {item.status.replace("_", " ")}
-                        </Badge>
-                        <Badge variant="outline" className="capitalize">{item.sector || item.tags}</Badge>
+                <CardHeader className="relative">
+                      <span
+                        className={`text-sm font-medium px-2 py-1 rounded absolute left-0 top-0 ${
+                          item.type === "bounty"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
+                        {item.type}
+                      </span>
+                      <div className="flex-1">
+                        <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant={getStatusColor(item.status)}>
+                            {item.status.replace("_", " ")}
+                          </Badge>
+                          <Badge variant="outline" className="capitalize">
+                            {item.sector || item.tags}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => toggleSaveProblem(item.id)}
-                      className={savedProblems.has(item.id) ? "text-primary" : ""}
-                    >
-                      <Bookmark
-                        className={`h-5 w-5 ${savedProblems.has(item.id) ? "fill-current" : ""}`}
-                      />
-                    </Button>
-                  </div>
-                </CardHeader>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => toggleSaveProblem(item.id)}
+                        className={savedProblems.has(item.id) ? "text-primary" : ""}
+                      >
+                        <Bookmark
+                          className={`h-5 w-5 ${savedProblems.has(item.id) ? "fill-current" : ""}`}
+                        />
+                      </Button>
+                    </CardHeader>
+
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground line-clamp-3">{item.description}</p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
