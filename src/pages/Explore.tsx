@@ -69,7 +69,29 @@ export default function Explore() {
       .eq("status", "active")
       .order("created_at", { ascending: false });
     if (bountyError) console.error("Failed to fetch bounties:", bountyError);
-    setBounties(bountiesData || []);
+
+      const bountyList = bountiesData || [];
+    const bountyIds = bountyList.map(b => b.id);
+
+    // Fetch view counts for all bounties at once
+    const { data: bountyViewsData } = await supabase
+    .from("problem_views")
+      .select("problem_id", { count: "exact" })
+      .in("problem_id", bountyIds);
+
+    // Count views per problem
+    const bountyViewsCountMap: Record<string, number> = {};
+    bountyIds.forEach(id => (bountyViewsCountMap[id] = 0));
+    (bountyViewsData || []).forEach((row: any) => {
+      bountyViewsCountMap[row.problem_id] = (bountyViewsCountMap[row.problem_id] || 0) + 1;
+    });
+
+    // Combine views with problems
+    const bountiesWithViews = bountyList.map(b => ({
+      ...b,
+      views_count: bountyViewsCountMap[b.id] || 0,
+    }));
+    setBounties(bountiesWithViews);
   };
 
   // ------------------------------
