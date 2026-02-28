@@ -33,33 +33,27 @@ export default function Dashboard() {
 const fetchProfile = async () => {
   setLoaded(true);
 
-  const { data: profiles, error: profileError } = await supabase
+  // Fetch profile with embedded roles
+  const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("*")
+    .select("*, user_roles(role)")
     .eq("id", user?.id)
     .single();
 
   if (profileError) {
-    console.log(profileError);
+    console.log("Profile fetch error:", profileError);
     setLoaded(false);
     return;
   }
 
-const { data: userRoles, error: roleError } = await supabase
-  .from("user_roles")
-  .select("role")
-  .eq("user_id", user?.id);
-
-setProfile({
-  ...profiles,
-  roles: userRoles?.map((r: any) => r.role) || ["user"],
-});
-
+  setProfile({
+    ...profileData,
+    // map roles or fallback to "user"
+    roles: profileData?.user_roles?.map((r: any) => r.role) || ["user"],
+  });
 
   setLoaded(false);
 };
-
-
 
   const fetchStats = async () => {
     const { data: problems } = await supabase
@@ -170,7 +164,6 @@ setProfile({
           <div className="2xl:text-3xl font-bold mb-1">
               {loaded ? "..." : (profile?.roles?.join(", ") || "user")}
             </div>
-
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>
