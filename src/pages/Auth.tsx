@@ -96,7 +96,7 @@ const handleSignup = async (e: React.FormEvent) => {
 
       // 2️⃣ Upsert role (SAFE)
       const { error: roleError } = await supabase
-        .from("user_roles")
+        .from("user_role")
         .upsert({
           user_id: user.id,
           role: role, // 'Innovator', 'User', etc.
