@@ -51,13 +51,13 @@ export default function Moderation() {
     }
   };
 
-  const logAction = async (action: string, problemId: string, details: any) => {
+  const logAction = async (action: string, problemId: string, metadata: any) => {
     await supabase.from('audit_logs').insert({
       user_id: user?.id,
       action,
       entity_type: 'problem',
       entity_id: problemId,
-      details
+      metadata
     });
   };
 

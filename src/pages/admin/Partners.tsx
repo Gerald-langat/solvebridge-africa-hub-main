@@ -51,6 +51,7 @@ export default function Partners() {
       return data;
     },
     onSuccess: () => {
+      
       queryClient.invalidateQueries({ queryKey: ["partners"] });
       toast({ title: "Partner added successfully" });
       setDialogOpen(false);

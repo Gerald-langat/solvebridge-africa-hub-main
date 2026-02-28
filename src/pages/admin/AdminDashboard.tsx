@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 
 type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
 
+
 export default function AdminDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -70,20 +71,11 @@ export default function AdminDashboard() {
   };
 
   const fetchRecentActivity = async () => {
-   const logAudit = async ({
-  action,
-  entityType,
-  entityId,
-  metadata = {},
-}) => {
-  await supabase.from("audit_logs").insert({
-    actor_id: user.id,
-    action,
-    entity_type: entityType,
-    entity_id: entityId,
-    metadata,
-  });
-};
+    const { data } = await supabase
+      .from('audit_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10);
     
     setRecentActivity(data || []);
   };
@@ -99,6 +91,21 @@ export default function AdminDashboard() {
     setUsers(data || []);
   };
 
+  const logAudit = async ({
+  action,
+  entityType,
+  entityId,
+  metadata = {},
+}) => {
+  await supabase.from("audit_logs").insert({
+    actor_id: user.id,
+    action,
+    entity_type: entityType,
+    entity_id: entityId,
+    metadata,
+  });
+};
+
   // Create User logic
 const handlePromote = async () => {
   if (!selectedUser) return alert("Select a user");
@@ -110,13 +117,27 @@ const handlePromote = async () => {
 
   const newRole = roleToDb(role);
 
-  const { error: roleError } = await supabase
+  const { error } = await supabase
     .from("user_roles")
     .upsert({ user_id: selectedUser, role: newRole });
 
-  if (roleError) return alert(roleError.message);
+  if (error) {
+    toast({ title: "Error", description: error.message, variant: "destructive" });
+    return;
+  }
 
-  alert("User role updated successfully!");
+  // 🔥 AUDIT LOG
+  await logAudit({
+    action: `Promoted user to ${newRole}`,
+    entityType: "user_roles",
+    entityId: selectedUser,
+    metadata: {
+      new_role: newRole,
+    },
+  });
+
+  toast({ title: "User role updated successfully!" });
+  setIsCreateUserOpen(false);
 };
 
 

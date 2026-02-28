@@ -79,6 +79,8 @@ const handleSignup = async (e: React.FormEvent) => {
 
     const user = data.user;
 
+    console.log("Signup successful, user:", user);
+
     if (user) {
       // 1️⃣ Upsert profile (SAFE)
       const { error: profileError } = await supabase

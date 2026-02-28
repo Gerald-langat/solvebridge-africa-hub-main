@@ -12,11 +12,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, DollarSign, Calendar, Target, Users } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Bounties() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -40,39 +42,91 @@ export default function Bounties() {
     },
   });
 
-  const createBounty = useMutation({
-    mutationFn: async (bounty: any) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+    const logAudit = async ({
+    action,
+    entityType,
+    entityId,
+    metadata = {},
+  }) => {
+    await supabase.from("audit_logs").insert({
+      actor_id: user.id,
+      action,
+      entity_type: entityType,
+      entity_id: entityId,
+      metadata,
+    });
+  };
 
-      const { data, error } = await supabase.from("bounties").insert([{
+ const createBounty = useMutation({
+  mutationFn: async (bounty: any) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+
+    const { data, error } = await supabase
+      .from("bounties")
+      .insert({
         ...bounty,
         created_by: user.id,
-        tags: bounty.tags ? bounty.tags.split(",").map((t: string) => t.trim()) : [],
-        target_regions: bounty.target_regions ? bounty.target_regions.split(",").map((r: string) => r.trim()) : [],
-      }]).select();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bounties"] });
-      toast({ title: "Bounty created successfully" });
-      setDialogOpen(false);
-      setFormData({
-        title: "",
-        description: "",
-        reward_amount: "",
-        currency: "USD",
-        deadline: "",
-        criteria: "",
-        tags: "",
-        target_regions: "",
-      });
-    },
-    onError: (error: any) => {
-      toast({ title: "Error creating bounty", description: error.message, variant: "destructive" });
-    },
-  });
+        reward_amount: parseFloat(bounty.reward_amount),
+        deadline: bounty.deadline
+          ? new Date(bounty.deadline).toISOString()
+          : null,
+        tags: bounty.tags
+          ? bounty.tags.split(",").map((t: string) => t.trim())
+          : [],
+        target_regions: bounty.target_regions
+          ? bounty.target_regions.split(",").map((r: string) => r.trim())
+          : [],
+      })
+      .select()
+      .single(); // ✅ returns one object instead of array
+
+    if (error) throw error;
+
+    return { bounty: data, actorId: user.id };
+  },
+
+  onSuccess: async ({ bounty, actorId }) => {
+    // ✅ AUDIT LOG
+    await logAudit({
+      action: "create_bounty",
+      entityType: "bounty",
+      entityId: bounty.id,
+      metadata: {
+        title: bounty.title,
+        reward_amount: bounty.reward_amount,
+        deadline: bounty.deadline,
+      },
+    });
+
+    queryClient.invalidateQueries({ queryKey: ["bounties"] });
+
+    toast({ title: "Bounty created successfully" });
+
+    setDialogOpen(false);
+
+    setFormData({
+      title: "",
+      description: "",
+      reward_amount: "",
+      currency: "USD",
+      deadline: "",
+      criteria: "",
+      tags: "",
+      target_regions: "",
+    });
+  },
+
+  onError: (error: any) => {
+    toast({
+      title: "Error creating bounty",
+      description: error.message,
+      variant: "destructive",
+    });
+  },
+});
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
