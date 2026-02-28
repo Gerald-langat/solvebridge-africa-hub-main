@@ -87,7 +87,6 @@ const handleSignup = async (e: React.FormEvent) => {
         .from("profiles")
         .upsert({
           id: user.id,
-          image: user.user_metadata.avatar_url ?? null,
           first_name: firstName,
           last_name: lastName,
           email: signupEmail,
