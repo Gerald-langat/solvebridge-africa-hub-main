@@ -75,7 +75,7 @@ export default function Explore() {
   // ------------------------------
   // Fetch Saved Problems
   // ------------------------------
-  const fetchSavedProblems = async () => {
+  const fetchSavedItems = async () => {
     if (!user?.id) return;
 
     const { data } = await supabase
@@ -83,7 +83,7 @@ export default function Explore() {
       .select("problem_id")
       .eq("user_id", user.id);
 
-    setSavedProblems(new Set(data.map((item) => item.problem_id.toString())));
+    setSavedItems(new Set(data.map((item) => item.problem_id.toString())));
   };
 
   // ------------------------------
@@ -125,7 +125,7 @@ useEffect(() => {
   if (!user?.id) return;
 
   fetchProblems();
-  fetchSavedProblems();
+  fetchSavedItems();
 }, [user?.id, sectorFilter]);
 
   // Merge problems and bounties into one feed
