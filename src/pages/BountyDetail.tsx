@@ -11,14 +11,14 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Loader2, MapPin, Users, Target, ArrowLeft, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function ProblemDetail() {
+export default function BountyDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { hasRole } = useUserRole();
 
   // Fetch problem
-  const { data: problem, isLoading } = useQuery({
+  const { data: bounty, isLoading } = useQuery({
     queryKey: ['bounty', id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -59,10 +59,10 @@ const recordView = async (problemId: number) => {
   if (!uid) return;
 
   const { error } = await supabase
-    .from("problem_views")
+    .from("bounty_views")
     .insert({
-      problem_id: problemId,
-      user_id: uid,
+      bounty_id: problemId,
+      created_by: uid,
     });
 
   if (error) {
@@ -74,10 +74,10 @@ const recordView = async (problemId: number) => {
 
   // On mount: record view and fetch updated count
   useEffect(() => {
-    if (problem?.id && user?.id) {
-      recordView(problem.id, user.id).then(() => fetchViews(problem.id));
+    if (bounty?.id && user?.id) {
+      recordView(bounty.id, user.id).then(() => fetchViews(bounty.id));
     }
-  }, [problem?.id, user?.id]);
+  }, [bounty?.id, user?.id]);
 
   if (isLoading) {
     return (

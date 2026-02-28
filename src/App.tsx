@@ -36,6 +36,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import Women from "./pages/Women&Youth";
 import MVP_Validation from "./pages/MVP_Validation";
 import ScrollToTop from "./components/ScrollToTop";
+import BountyDetail from "./pages/BountyDetail";
 
 const queryClient = new QueryClient();
 
