@@ -61,7 +61,7 @@ const recordView = async (bountyId: number) => {
   const { error } = await supabase
     .from("problem_views")
     .insert({
-      id: bountyId,
+      problem_id: bountyId,
       user_id: uid,
     });
 
