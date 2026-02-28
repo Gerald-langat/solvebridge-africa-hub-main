@@ -25,7 +25,7 @@ export default function Partners() {
     contact_name: "",
     contact_email: "",
     logo_url: "",
-    access_level: "",
+    access_level: "read only",
     notes: "",
   });
 
@@ -57,7 +57,7 @@ export default function Partners() {
       setFormData({
         name: "",
         contact_name: "",
-        contact_email: "",
+        contact_email: "read only",
         logo_url: "",
         access_level: "",
         notes: "",
