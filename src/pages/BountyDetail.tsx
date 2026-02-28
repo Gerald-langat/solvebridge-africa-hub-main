@@ -19,10 +19,10 @@ export default function ProblemDetail() {
 
   // Fetch problem
   const { data: problem, isLoading } = useQuery({
-    queryKey: ['problem', id],
+    queryKey: ['bounty', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('problems')
+        .from('bounties')
         .select('*')
         .eq('id', id)
         .single();

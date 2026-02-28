@@ -60,6 +60,8 @@ const App = () => (
           <Route path="/dashboard/progress" element={<Progress />} />
           <Route path="/submit-problem" element={<SubmitProblem />} />
           <Route path="/problem/:id" element={<ProblemDetail />} />
+          <Route path="/bounty/:id" element={<BountyDetail />} />
+
           <Route path="/submit-solution/:problemId" element={<SubmitSolution />} />
           <Route path="/dashboard/explore" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />

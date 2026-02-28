@@ -251,7 +251,7 @@ useEffect(() => {
               navigate(
                 item.type === "problem"
                   ? `/problem/${item.id}`
-                  : `/submit-solution/${item.id}`
+                  : `/bounty/${item.id}`
               )
             }
           >
