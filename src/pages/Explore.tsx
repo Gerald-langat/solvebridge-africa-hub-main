@@ -195,7 +195,7 @@ useEffect(() => {
                 <Card
                   key={item.id}
                   className={`hover-scale animate-scale-in transition-all ${
-                    item.type === "bounty" ? "border-2 border-yellow-400 bg-yellow-50" : "shadow-soft"
+                    item.type === "bounty" ? "border-2 border-yellow-400" : "shadow-soft"
                   }`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
