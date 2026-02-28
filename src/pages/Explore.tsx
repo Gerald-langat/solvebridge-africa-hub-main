@@ -244,13 +244,19 @@ useEffect(() => {
                     </div>
                   </div>
                   <div className="flex gap-2 pt-2">
-                    <Button
-                      variant="default"
-                      className="flex-1"
-                      onClick={() => navigate(`/problem/${item.id}`)}
-                    >
-                      View Details
-                    </Button>
+                      <Button
+            variant="default"
+            className="flex-1"
+            onClick={() =>
+              navigate(
+                item.type === "problem"
+                  ? `/problem/${item.id}`
+                  : `/submit-solution/${item.id}`
+              )
+            }
+          >
+            {item.type === "problem" ? "View Details" : "Submit Solution"}
+          </Button>
                   </div>
                 </CardContent>
               </Card>
