@@ -195,19 +195,20 @@ useEffect(() => {
                 <Card
                   key={item.id}
                   className={`hover-scale animate-scale-in transition-all ${
-                    item.type === "bounty" ? "border-2 border-yellow-400" : "shadow-soft"
+                    item.type === "bounty" ? "border-[1px] border-yellow-400" : "shadow-soft"
                   }`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
+                    <span className={`text-sm font-medium px-2 py-1 rounded ${item.type === "bounty" ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"}`}>{item.type}</span>
                     <div className="flex-1">
                       <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
                       <div className="flex flex-wrap gap-2">
                         <Badge variant={getStatusColor(item.status)}>
                           {item.status.replace("_", " ")}
                         </Badge>
-                        <Badge variant="outline" className="capitalize">{item.sector}</Badge>
+                        <Badge variant="outline" className="capitalize">{item.sector || item.tags}</Badge>
                       </div>
                     </div>
                     <Button
