@@ -44,18 +44,18 @@ export const HeroSection = () => {
 
   // Fetch stats from Supabase
 const fetchStats = async () => {
-  const { count: submittedProblems } = await supabase
-    .from("problems")
-    .select("id", { count: "exact", head: true });
-
-  const { count: validatedProblems } = await supabase
-    .from("problems")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "validated");
-
-  const { count: collaborations } = await supabase
-    .from("collaborations")
-    .select("id", { count: "exact", head: true });
+  const [
+    { count: submittedProblems },
+    { count: validatedProblems },
+    { count: collaborations },
+  ] = await Promise.all([
+    supabase.from("problems").select("id", { count: "exact", head: true }),
+    supabase
+      .from("problems")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "validated"),
+    supabase.from("collaborations").select("id", { count: "exact", head: true }),
+  ]);
 
   const impactScore =
     (validatedProblems || 0) * 10 + (collaborations || 0) * 5;
