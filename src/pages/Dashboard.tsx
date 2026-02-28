@@ -35,7 +35,7 @@ const fetchProfile = async () => {
 
   const { data: profiles, error: profileError } = await supabase
     .from("profiles")
-    .select("*")
+    .select("*, user_roles(role)")
     .eq("id", user?.id)
     .single();
 
@@ -45,17 +45,7 @@ const fetchProfile = async () => {
     return;
   }
 
-const { data: userRoles, error: roleError } = await supabase
-  .from("user_roles")
-  .select("role")
-  .eq("user_id", user?.id);
-
-setProfile({
-  ...profiles,
-  roles: userRoles?.map((r: any) => r.role) || ["user"],
-});
-
-
+  setProfile(profiles);
   setLoaded(false);
 };
 
