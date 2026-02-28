@@ -37,7 +37,7 @@ const { data: solutions, isLoading: solutionsLoading, error: solutionsError } = 
   enabled: !!id,
   queryFn: async () => {
     const { data, error } = await supabase
-      .from('bountyProjects')
+      .from('bounty_solutions')
       .select(`
         *,
         creator:profiles (
@@ -59,9 +59,9 @@ const recordView = async (bountyId: number) => {
   if (!uid) return;
 
   const { error } = await supabase
-    .from("problem_views")
+    .from("bounty_views")
     .insert({
-      problem_id: bountyId,
+      bounty_id: bountyId,
       user_id: uid,
     });
 
