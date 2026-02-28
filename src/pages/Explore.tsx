@@ -66,7 +66,7 @@ export default function Explore() {
     const { data: bountiesData, error: bountyError } = await supabase
       .from("bounties")
       .select("*")
-      .eq("status", "active")
+      .eq("status", "pending")
       .order("created_at", { ascending: false });
     if (bountyError) console.error("Failed to fetch bounties:", bountyError);
     setBounties(bountiesData || []);
@@ -153,9 +153,9 @@ useEffect(() => {
       <DashboardLayout>
         <div className="space-y-8 animate-fade-in">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">Explore Problems</h1>
+            <h1 className="text-4xl font-bold text-foreground">Explore Problems/Bounties</h1>
             <p className="text-muted-foreground mt-2">
-              Browse validated problems and find collaboration opportunities
+              Browse validated problems and Bounties and find collaboration opportunities
             </p>
           </div>
 
