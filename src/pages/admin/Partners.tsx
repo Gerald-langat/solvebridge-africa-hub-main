@@ -94,7 +94,7 @@ export default function Partners() {
 
 const statusMap = {
   full_access: "active",
-  write_access: "pending", // or "active" if no approval workflow
+  write: "pending", // or "active" if no approval workflow
   read_only: "active",
 };
 
@@ -256,7 +256,7 @@ const handleSubmit = (e: React.FormEvent) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="read_only">Read Only</SelectItem>
-                      <SelectItem value="write_access">Write Access</SelectItem>
+                      <SelectItem value="write">Write Access</SelectItem>
                       <SelectItem value="full_access">Full Access</SelectItem>
                     </SelectContent>
                   </Select>
