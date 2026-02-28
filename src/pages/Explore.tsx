@@ -221,8 +221,7 @@ useEffect(() => {
                             {item.sector || item.tags}
                           </Badge>
                         </div>
-                      </div>
-                      <Button
+                          <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => toggleSaveItem(item.id, item.type)}
@@ -230,6 +229,8 @@ useEffect(() => {
                       >
                         <Bookmark className={`h-5 w-5 ${savedItems.has(`${item.type}-${item.id}`) ? "fill-current" : ""}`} />
                       </Button>
+                      </div>
+                    
 
                     </CardHeader>
 
