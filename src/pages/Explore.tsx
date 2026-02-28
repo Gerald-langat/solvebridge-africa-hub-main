@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Bookmark, Eye, MapPin } from "lucide-react";
+import { Search, Bookmark, Eye, MapPin, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -16,18 +16,21 @@ export default function Explore() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-
   const [problems, setProblems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
   const [bounties, setBounties] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   // ------------------------------
   // Fetch Problems + Views
   // ------------------------------
-  const fetchProblems = async () => {
+ const fetchProblems = async () => {
+  try {
+    setIsLoading(true);
+
     let query = supabase
       .from("problems")
       .select("*")
@@ -37,62 +40,62 @@ export default function Explore() {
     if (sectorFilter !== "all") query = query.eq("sector", sectorFilter as any);
 
     const { data: problemsData, error } = await query;
-    if (error) return console.error("Failed to fetch problems:", error);
+    if (error) throw error;
 
     const problemsList = problemsData || [];
     const problemIds = problemsList.map(p => p.id);
 
-    // Fetch view counts for all problems at once
     const { data: viewsData } = await supabase
-    .from("problem_views")
-      .select("problem_id", { count: "exact" })
+      .from("problem_views")
+      .select("problem_id")
       .in("problem_id", problemIds);
 
-    // Count views per problem
     const viewsCountMap: Record<string, number> = {};
     problemIds.forEach(id => (viewsCountMap[id] = 0));
     (viewsData || []).forEach((row: any) => {
-      viewsCountMap[row.problem_id] = (viewsCountMap[row.problem_id] || 0) + 1;
+      viewsCountMap[row.problem_id]++;
     });
 
-    // Combine views with problems
-    const problemsWithViews = problemsList.map(p => ({
-      ...p,
-      views_count: viewsCountMap[p.id] || 0,
-    }));
+    setProblems(
+      problemsList.map(p => ({
+        ...p,
+        views_count: viewsCountMap[p.id] || 0,
+      }))
+    );
 
-    setProblems(problemsWithViews);
-    // Bounties
-    const { data: bountiesData, error: bountyError } = await supabase
+    // -------- Bounties --------
+    const { data: bountiesData } = await supabase
       .from("bounties")
       .select("*")
       .eq("status", "active")
       .order("created_at", { ascending: false });
-    if (bountyError) console.error("Failed to fetch bounties:", bountyError);
 
-      const bountyList = bountiesData || [];
+    const bountyList = bountiesData || [];
     const bountyIds = bountyList.map(b => b.id);
 
-    // Fetch view counts for all bounties at once
     const { data: bountyViewsData } = await supabase
-    .from("bounty_views")
-      .select("bounty_id", { count: "exact" })
+      .from("bounty_views")
+      .select("bounty_id")
       .in("bounty_id", bountyIds);
 
-    // Count views per problem
     const bountyViewsCountMap: Record<string, number> = {};
     bountyIds.forEach(id => (bountyViewsCountMap[id] = 0));
     (bountyViewsData || []).forEach((row: any) => {
-      bountyViewsCountMap[row.bounty_id] = (bountyViewsCountMap[row.bounty_id] || 0) + 1;
+      bountyViewsCountMap[row.bounty_id]++;
     });
 
-    // Combine views with problems
-    const bountiesWithViews = bountyList.map(b => ({
-      ...b,
-      views_count: bountyViewsCountMap[b.id] || 0,
-    }));
-    setBounties(bountiesWithViews);
-  };
+    setBounties(
+      bountyList.map(b => ({
+        ...b,
+        views_count: bountyViewsCountMap[b.id] || 0,
+      }))
+    );
+  } catch (err) {
+    console.error("Failed to load explore data:", err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // ------------------------------
   // Fetch Saved Problems
@@ -213,7 +216,14 @@ useEffect(() => {
             </CardContent>
           </Card>
 
+{isLoading && (
+  <div className="flex items-center justify-center py-20">
+    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+  </div>
+)}
+
           {/* Problems Grid */}
+          {!isLoading && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {filteredItems.map((item, index) => (
                 <Card
@@ -286,7 +296,7 @@ useEffect(() => {
               </Card>
             ))}
           </div>
-
+)}
           {filteredItems.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
