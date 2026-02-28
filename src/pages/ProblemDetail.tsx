@@ -31,6 +31,21 @@ export default function ProblemDetail() {
     },
   });
 
+  const { data: bounties } = useQuery({
+  queryKey: ['bounty', id],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('bounties')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    return data;
+  },
+  enabled: !!id,
+});
+
+
 // Fetch solutions
 const { data: solutions, isLoading: solutionsLoading, error: solutionsError } = useQuery({
   queryKey: ['solutions', id],

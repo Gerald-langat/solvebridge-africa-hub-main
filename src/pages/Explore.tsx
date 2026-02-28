@@ -20,7 +20,7 @@ export default function Explore() {
   const [problems, setProblems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
-  const [savedProblems, setSavedProblems] = useState<Set<string>>(new Set());
+  const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
   const [bounties, setBounties] = useState<any[]>([]);
 
 
@@ -89,32 +89,34 @@ export default function Explore() {
   // ------------------------------
   // Save / Unsave Problem
   // ------------------------------
-  const toggleSaveProblem = async (problemId: string) => {
-    if (!user?.id) return;
+const toggleSaveItem = async (itemId: string, type: "problem" | "bounty") => {
+  if (!user?.id) return;
 
-    if (savedProblems.has(problemId)) {
-      await supabase
-        .from("saved_problems")
-        .delete()
-        .eq("user_id", user.id)
-        .eq("problem_id", problemId);
+  const key = `${type}-${itemId}`;
+  const newSet = new Set(savedItems);
 
-      setSavedProblems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(problemId);
-        return newSet;
-      });
+  if (newSet.has(key)) {
+    await supabase
+      .from("saved_problems")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("item_id", itemId)
+      .eq("item_type", type);
 
-      toast({ title: "Removed from saved problems" });
-    } else {
-      await supabase
-        .from("saved_problems")
-        .insert({ user_id: user.id, problem_id: problemId });
+    newSet.delete(key);
+    setSavedItems(newSet);
+    toast({ title: `${type === "problem" ? "Problem" : "Bounty"} removed from saved items` });
+  } else {
+    await supabase
+      .from("saved_problems")
+      .insert({ user_id: user.id, item_id: itemId, item_type: type });
 
-      setSavedProblems(prev => new Set([...prev, problemId]));
-      toast({ title: "Problem saved successfully" });
-    }
-  };
+    newSet.add(key);
+    setSavedItems(newSet);
+    toast({ title: `${type === "problem" ? "Problem" : "Bounty"} saved successfully` });
+  }
+};
+
 
   // ------------------------------
   // Initial Load
@@ -223,13 +225,12 @@ useEffect(() => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => toggleSaveProblem(item.id)}
-                        className={savedProblems.has(item.id) ? "text-primary" : ""}
+                        onClick={() => toggleSaveItem(item.id, item.type)}
+                        className={savedItems.has(`${item.type}-${item.id}`) ? "text-primary" : ""}
                       >
-                        <Bookmark
-                          className={`h-5 w-5 ${savedProblems.has(item.id) ? "fill-current" : ""}`}
-                        />
+                        <Bookmark className={`h-5 w-5 ${savedItems.has(`${item.type}-${item.id}`) ? "fill-current" : ""}`} />
                       </Button>
+
                     </CardHeader>
 
                 <CardContent className="space-y-4">
