@@ -201,7 +201,7 @@ useEffect(() => {
                 >
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
-                    <span className={`text-sm font-medium px-2 py-1 rounded ${item.type === "bounty" ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"}`}>{item.type}</span>
+                    <span className={`text-sm font-medium px-2 py-1 rounded absolute left-0 top-0 ${item.type === "bounty" ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"}`}>{item.type}</span>
                     <div className="flex-1">
                       <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
                       <div className="flex flex-wrap gap-2">
