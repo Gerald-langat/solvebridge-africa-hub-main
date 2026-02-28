@@ -65,7 +65,7 @@ const App = () => (
           <Route path="/bounty/:id" element={<BountyDetail />} />
 
           <Route path="/submit-solution/:problemId" element={<SubmitSolution />} />
-          <Route path="/submit-solution/:problemId" element={<SubmitBountySolution />} />
+          <Route path="/submitBountySolution/:bountyId" element={<SubmitBountySolution />} />
 
           <Route path="/dashboard/explore" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />

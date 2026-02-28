@@ -180,17 +180,15 @@ const recordView = async (bountyId: number) => {
                 </div>
               )}
 
-              {canProposeSolution && bounty.status === 'validated' && (
                 <div className="pt-6 border-t">
                   <Button
                     size="lg"
-                    onClick={() => navigate(`/submit-solution/${id}`)}
+                    onClick={() => navigate(`/submitBountySolution/${bounty.id}`)}
                     className="w-full sm:w-auto"
                   >
                     Propose Solution
                   </Button>
                 </div>
-              )}
             </CardContent>
           </Card>
 
@@ -216,7 +214,6 @@ const recordView = async (bountyId: number) => {
                               />} {creator?.first_name} {creator?.last_name}
                               </CardDescription>
                             </div>
-                            <Badge>{solution.status}</Badge>
                           </div>
                         </CardHeader>
                         <CardContent>
