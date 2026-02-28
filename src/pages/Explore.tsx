@@ -226,7 +226,7 @@ useEffect(() => {
                   <p className="text-muted-foreground line-clamp-3">{item.description}</p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" /> {item.location}
+                      <MapPin className="h-4 w-4" /> {item.location || item.target_regions}
                     </div>
                     <div className="flex items-center gap-1">
                       <Eye className="h-4 w-4" /> {item.views_count || 0} views
