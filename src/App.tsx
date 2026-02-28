@@ -37,6 +37,7 @@ import Women from "./pages/Women&Youth";
 import MVP_Validation from "./pages/MVP_Validation";
 import ScrollToTop from "./components/ScrollToTop";
 import BountyDetail from "./pages/BountyDetail";
+import SubmitBountySolution from "./pages/SubmitBountySolution";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,8 @@ const App = () => (
           <Route path="/bounty/:id" element={<BountyDetail />} />
 
           <Route path="/submit-solution/:problemId" element={<SubmitSolution />} />
+          <Route path="/submit-solution/:problemId" element={<SubmitBountySolution />} />
+
           <Route path="/dashboard/explore" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/dashboard/settings" element={<Settings />} />

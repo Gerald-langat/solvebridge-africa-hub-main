@@ -37,7 +37,7 @@ const { data: solutions, isLoading: solutionsLoading, error: solutionsError } = 
   enabled: !!id,
   queryFn: async () => {
     const { data, error } = await supabase
-      .from('projects')
+      .from('bountyProjects')
       .select(`
         *,
         creator:profiles (
@@ -112,7 +112,7 @@ const recordView = async (bountyId: number) => {
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Problems
+            Back to Explore
           </Button>
 
           <Card className="mb-8">
