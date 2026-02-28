@@ -168,8 +168,8 @@ setProfile({
                 </div>
               </div>
             <div className="2xl:text-3xl font-bold mb-1">
-  {loaded ? "..." : (profile?.roles?.join(", ") || "user")}
-</div>
+                {loaded ? "..." : (profile?.roles?.join(", ") || "user")}
+              </div>
 
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>

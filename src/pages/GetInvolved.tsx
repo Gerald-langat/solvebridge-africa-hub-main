@@ -11,22 +11,45 @@ import { Link } from "react-router-dom";
 import { FileText, Users, HandshakeIcon, MapPin, Mail, Phone, ArrowRight, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { useRef } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 
 export default function GetInvolved() {
   const contactRef = useRef<HTMLDivElement | null>(null);
+   const { user } = useAuth(); // get the logged-in user
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     organization: "",
     inquiry_type: "",
-    message: ""
+    message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Thank you for reaching out to SolveBridge Africa — we'll respond soon.");
-    setFormData({ name: "", email: "", organization: "", inquiry_type: "", message: "" });
+
+    if (!user) {
+      toast.error("You must be logged in to submit this form.");
+      return;
+    }
+
+    const { error } = await supabase.from("collaborations").insert({
+      name: formData.name,
+      email: formData.email,
+      organization: formData.organization,
+      inquiry_type: formData.inquiry_type,
+      message: formData.message,
+      user_id: user.id,
+    });
+
+    if (error) {
+      toast.error("Failed to submit form. Please try again.");
+      console.error(error);
+    } else {
+      toast.success("Thank you for reaching out to SolveBridge Africa — we'll respond soon.");
+      setFormData({ name: "", email: "", organization: "", inquiry_type: "", message: "" });
+    }
   };
 
   return (
@@ -252,7 +275,7 @@ export default function GetInvolved() {
                     <Phone className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-semibold mb-1">Phone</p>
-                      <p className="text-sm text-muted-foreground">+254 702660246</p>
+                      <p className="text-sm text-muted-foreground">coming soon</p>
                     </div>
                   </div>
                 </CardContent>
