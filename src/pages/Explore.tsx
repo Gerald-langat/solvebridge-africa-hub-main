@@ -21,6 +21,7 @@ export default function Explore() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
   const [savedProblems, setSavedProblems] = useState<Set<string>>(new Set());
+  const [bounties, setBounties] = useState<any[]>([]);
 
 
   // ------------------------------
@@ -61,6 +62,14 @@ export default function Explore() {
     }));
 
     setProblems(problemsWithViews);
+    // Bounties
+    const { data: bountiesData, error: bountyError } = await supabase
+      .from("bounties")
+      .select("*")
+      .eq("status", "active")
+      .order("created_at", { ascending: false });
+    if (bountyError) console.error("Failed to fetch bounties:", bountyError);
+    setBounties(bountiesData || []);
   };
 
   // ------------------------------
@@ -117,12 +126,16 @@ useEffect(() => {
   fetchSavedProblems();
 }, [user?.id, sectorFilter]);
 
-  // ------------------------------
-  // Filtered Problems
-  // ------------------------------
-  const filteredProblems = problems.filter(problem =>
-    problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    problem.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // Merge problems and bounties into one feed
+  const exploreItems = [
+    ...problems.map(p => ({ ...p, type: "problem" })),
+    ...bounties.map(b => ({ ...b, type: "bounty" })),
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  // Filter by search term
+  const filteredItems = exploreItems.filter(item =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const getStatusColor = (status: string) => {
@@ -178,7 +191,7 @@ useEffect(() => {
 
           {/* Problems Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredProblems.map((problem, index) => (
+            {filteredItems.map((problem, index) => (
               <Card key={problem.id} className="hover-scale animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
@@ -227,10 +240,10 @@ useEffect(() => {
             ))}
           </div>
 
-          {filteredProblems.length === 0 && (
+          {filteredItems.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">No validated problems found matching your criteria</p>
+                <p className="text-muted-foreground">No validated problems or bounties found matching your criteria</p>
               </CardContent>
             </Card>
           )}
