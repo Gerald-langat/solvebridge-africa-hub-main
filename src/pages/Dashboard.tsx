@@ -35,7 +35,7 @@ const fetchProfile = async () => {
 
   const { data: profiles, error: profileError } = await supabase
     .from("profiles")
-    .select("*, user_roles(role)")
+    .select("*")
     .eq("id", user?.id)
     .single();
 
@@ -45,7 +45,17 @@ const fetchProfile = async () => {
     return;
   }
 
-  setProfile(profiles);
+const { data: userRoles, error: roleError } = await supabase
+  .from("user_roles")
+  .select("role")
+  .eq("user_id", user?.id);
+
+setProfile({
+  ...profiles,
+  roles: userRoles?.map((r: any) => r.role) || ["user"],
+});
+
+
   setLoaded(false);
 };
 
@@ -158,7 +168,7 @@ const fetchProfile = async () => {
                 </div>
               </div>
             <div className="2xl:text-3xl font-bold mb-1">
-                {loaded ? "..." : profile?.role}
+                {loaded ? "..." : (profile?.role|| "user")}
               </div>
 
               <div className="text-sm text-muted-foreground">Your Role</div>
