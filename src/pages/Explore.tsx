@@ -191,46 +191,52 @@ useEffect(() => {
 
           {/* Problems Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredItems.map((problem, index) => (
-              <Card key={problem.id} className="hover-scale animate-scale-in" style={{ animationDelay: `${index * 0.05}s` }}>
+              {filteredItems.map((item, index) => (
+                <Card
+                  key={item.id}
+                  className={`hover-scale animate-scale-in transition-all ${
+                    item.type === "bounty" ? "border-2 border-yellow-400 bg-yellow-50" : "shadow-soft"
+                  }`}
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">{problem.title}</CardTitle>
+                      <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
                       <div className="flex flex-wrap gap-2">
-                        <Badge variant={getStatusColor(problem.status)}>
-                          {problem.status.replace("_", " ")}
+                        <Badge variant={getStatusColor(item.status)}>
+                          {item.status.replace("_", " ")}
                         </Badge>
-                        <Badge variant="outline" className="capitalize">{problem.sector}</Badge>
+                        <Badge variant="outline" className="capitalize">{item.sector}</Badge>
                       </div>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => toggleSaveProblem(problem.id)}
-                      className={savedProblems.has(problem.id) ? "text-primary" : ""}
+                      onClick={() => toggleSaveProblem(item.id)}
+                      className={savedProblems.has(item.id) ? "text-primary" : ""}
                     >
                       <Bookmark
-                        className={`h-5 w-5 ${savedProblems.has(problem.id) ? "fill-current" : ""}`}
+                        className={`h-5 w-5 ${savedProblems.has(item.id) ? "fill-current" : ""}`}
                       />
                     </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-muted-foreground line-clamp-3">{problem.description}</p>
+                  <p className="text-muted-foreground line-clamp-3">{item.description}</p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" /> {problem.location}
+                      <MapPin className="h-4 w-4" /> {item.location}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" /> {problem.views_count || 0} views
+                      <Eye className="h-4 w-4" /> {item.views_count || 0} views
                     </div>
                   </div>
                   <div className="flex gap-2 pt-2">
                     <Button
                       variant="default"
                       className="flex-1"
-                      onClick={() => navigate(`/problem/${problem.id}`)}
+                      onClick={() => navigate(`/problem/${item.id}`)}
                     >
                       View Details
                     </Button>
