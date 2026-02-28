@@ -220,15 +220,16 @@ useEffect(() => {
                           <Badge variant="outline" className="capitalize">
                             {item.sector || item.tags}
                           </Badge>
-                        </div>
-                          <Button
+                           <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => toggleSaveItem(item.id, item.type)}
-                        className={savedItems.has(`${item.type}-${item.id}`) ? "text-primary" : ""}
+                        className={savedItems.has(`${item.type}-${item.id}`) ? "text-primary ml-auto" : "ml-auto"}
                       >
                         <Bookmark className={`h-5 w-5 ${savedItems.has(`${item.type}-${item.id}`) ? "fill-current" : ""}`} />
                       </Button>
+                        </div>
+                         
                       </div>
                     
 
