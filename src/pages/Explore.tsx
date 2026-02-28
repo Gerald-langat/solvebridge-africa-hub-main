@@ -66,7 +66,7 @@ export default function Explore() {
     const { data: bountiesData, error: bountyError } = await supabase
       .from("bounties")
       .select("*")
-      .eq("status", "pending")
+      .eq("status", "active")
       .order("created_at", { ascending: false });
     if (bountyError) console.error("Failed to fetch bounties:", bountyError);
     setBounties(bountiesData || []);
