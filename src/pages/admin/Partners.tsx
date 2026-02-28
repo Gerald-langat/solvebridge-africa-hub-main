@@ -27,7 +27,6 @@ export default function Partners() {
     logo_url: "",
     access_level: "",
     notes: "",
-    status: "active",
   });
 
   const { data: partners, isLoading } = useQuery({
@@ -62,7 +61,6 @@ export default function Partners() {
         logo_url: "",
         access_level: "",
         notes: "",
-        status: "active",
       });
     },
     onError: (error: any) => {
