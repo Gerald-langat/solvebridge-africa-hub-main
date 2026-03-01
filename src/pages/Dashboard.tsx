@@ -56,7 +56,7 @@ const fetchProfile = async () => {
   // 3️⃣ Set profile
   setProfile({
     ...profileData,
-    role: roleData?.role || "user", // ✅ correct
+    role: roleData?.role || null, // ✅ correct
   });
 
   setLoaded(false);
