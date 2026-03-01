@@ -45,7 +45,7 @@ export default function AdminDashboard() {
   const [role, setRole] = useState<UserRole>("contributor");
     const [users, setUsers] = useState<any[]>([]);
  const [selectedUser, setSelectedUser] = useState<string>("");
-  const [profile, setProfile] = useState<any>(null);
+  const [myRole, setMyRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
     fetchStats();
@@ -71,19 +71,20 @@ export default function AdminDashboard() {
     });
   };
 
-  const fetchProfile = async () => {
-    // 2️⃣ Fetch role
-    const { data: roleData, error: roleError } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user?.id)
-      .single();
-  
-    // 3️⃣ Set profile
-    setProfile(roleData?.role || null
-    );
-  
-  };
+const fetchProfile = async () => {
+  const { data, error } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user?.id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setMyRole(data.role);
+};
 
    useEffect(() => {
       if (user) {
@@ -140,13 +141,13 @@ const handlePromote = async () => {
   }
 
   // Only super admins can assign roles
-  if (profile.role !== "super_admin") {
-    return toast({
-      title: "Error",
-      description: "Only Super Admins can assign or update roles",
-      variant: "destructive",
-    });
-  }
+if (myRole !== "super_admin") {
+  return toast({
+    title: "Error",
+    description: "Only Super Admins can assign or update roles",
+    variant: "destructive",
+  });
+}
 
   try {
     // Check if the selected user already has a role
@@ -158,24 +159,16 @@ const handlePromote = async () => {
 
     if (fetchError) throw fetchError;
 
-    if (existingRole) {
-      // ✅ Update existing role
-      const { data, error } = await supabase
-        .from("user_roles")
-        .update({ role })
-        .eq("user_id", selectedUser)
-        .select();
-
-      if (error) throw error;
-    } else {
-      // ✅ Insert new role for the user (only super_admin can do this)
-      const { error: insertError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: selectedUser, role });
-
-      if (insertError) throw insertError;
-    }
-
+  if (existingRole) {
+  await supabase
+    .from("user_roles")
+    .update({ role })
+    .eq("user_id", selectedUser);
+} else {
+  await supabase
+    .from("user_roles")
+    .insert({ user_id: selectedUser, role });
+}
     // 🔥 Audit log
     await logAudit({
       action: `Assigned role '${role}' to user`,
