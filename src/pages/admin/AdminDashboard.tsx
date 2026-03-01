@@ -111,11 +111,9 @@ const handlePromote = async () => {
   if (!selectedUser) return alert("Select a user");
 
   const roleToDb = (role: UserRole) => {
-    if (role === "super_admin" && user.role !== "super_admin") {
-  toast({ title: "Error", description: "Only super admins can promote to Super Admin", variant: "destructive" });
-  return role;
-}
-  }
+    if (role === "Super_admin" && user.role !== "Super_admin")
+    return role;
+  };
 
   const newRole = roleToDb(role);
 
