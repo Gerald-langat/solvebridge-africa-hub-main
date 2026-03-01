@@ -62,7 +62,7 @@ export default function Moderation() {
   };
 
   const handleValidate = async (problemId: string) => {
-    const { error } = await supabase
+  const { error } = await supabase
   .from('problems')
   .update({
     status: 'validated',
@@ -114,7 +114,7 @@ if (error) {
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to decline problem",
+        description: "Failed to decline problem", error: error.message, // 👈 SHOW REAL ERROR
         variant: "destructive"
       });
     } else {
