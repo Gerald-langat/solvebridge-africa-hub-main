@@ -176,14 +176,20 @@ const fetchProfile = async () => {
               </div>
 <div className="2xl:text-3xl font-bold mb-1">
   {loaded ? "..." : (
-    profile?.role ? (
+    profile ? (
       <>
+        {/* Always show the base role */}
+        {profile.role ? capitalizeRole(profile.role) : "User"}
+
+        {/* Only show promoted role if it exists */}
+        {profile.myRole && (
           <div className="text-xs text-muted-foreground">
-            Promoted to: {capitalizeRole(profile.role)}
+            Promoted to: {capitalizeRole(profile.myRole)}
           </div>
+        )}
       </>
     ) : (
-      profile?.myRole ? capitalizeRole(profile.myRole) : "User"
+      "User" // fallback if profile is null
     )
   )}
 </div>
