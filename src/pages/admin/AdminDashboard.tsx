@@ -111,9 +111,11 @@ const handlePromote = async () => {
   if (!selectedUser) return alert("Select a user");
 
   const roleToDb = (role: UserRole) => {
-    if (role === "admin") return "moderator";
-    return role;
-  };
+    if (role === "super_admin" && user.role !== "super_admin") {
+  toast({ title: "Error", description: "Only super admins can promote to Super Admin", variant: "destructive" });
+  return role;
+}
+  }
 
   const newRole = roleToDb(role);
 
@@ -180,7 +182,7 @@ const handlePromote = async () => {
           <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Create User</DialogTitle>
+                <DialogTitle>Promote User</DialogTitle>
                 <DialogDescription>
                   Create a new user Role (super_admin, moderator, program_manager)
                 </DialogDescription>
