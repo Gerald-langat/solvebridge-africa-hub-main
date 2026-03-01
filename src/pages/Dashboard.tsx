@@ -113,6 +113,13 @@ const fetchProfile = async () => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
+  function capitalizeRole(role: string) {
+  return role
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
@@ -167,22 +174,18 @@ const fetchProfile = async () => {
                   <Users className="text-secondary" size={24} />
                 </div>
               </div>
-            <div className="2xl:text-3xl font-bold mb-1">
-              {loaded
-                ? "..."
-                : (() => {
-                    // Prioritize user_roles first, then myRole from profiles
-                    const roleFromUserRoles = profile?.role; // user_roles role
-                    const roleFromProfile = profile?.myRole; // profiles.myRole
-                    const role = roleFromUserRoles || roleFromProfile || "user";
-
-                    // Capitalize nicely, including multi-word roles
-                    return role
-                      .split("_")
-                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(" ");
-                  })()}
-            </div>
+                <div className="2xl:text-3xl font-bold mb-1">
+            {loaded ? "..." : (
+              <>
+                {profile?.myRole ? capitalizeRole(profile.myRole) : "User"}
+                {profile?.role && (
+                  <div className="text-sm text-muted-foreground">
+                    Promoted to: {capitalizeRole(profile.role)}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>
