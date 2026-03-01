@@ -167,9 +167,9 @@ const fetchProfile = async () => {
                   <Users className="text-secondary" size={24} />
                 </div>
               </div>
-          <div className="2xl:text-3xl font-bold mb-1">
-              {loaded ? "..." : (profile?.roles?.join(", ") || "user")}
-            </div>
+        <div className="2xl:text-3xl font-bold mb-1">
+          {loaded ? "..." : (profile?.role || "user")}
+        </div>
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>
