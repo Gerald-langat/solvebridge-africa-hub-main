@@ -128,7 +128,8 @@ const handlePromote = async () => {
   const { error } = await supabase
     .from("user_roles")
     .update({ role })
-    .eq("user_id", selectedUser);
+    .eq("user_id", selectedUser)
+      .select(); // 👈 IMPORTANT
 
   if (error) {
     return toast({
