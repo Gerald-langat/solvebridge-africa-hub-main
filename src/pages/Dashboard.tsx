@@ -182,7 +182,7 @@ const fetchProfile = async () => {
 
       {/* Only show promoted role if it exists */}
       {profile?.role && (
-        <div className="text-xs text-muted-foreground">
+        <div className={`text-xs text-muted-foreground ${!profile?.role ? "hidden" : ""}`}>
           Promoted to: {capitalizeRole(profile.role)}
         </div>
       )}
