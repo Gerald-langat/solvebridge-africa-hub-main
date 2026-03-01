@@ -176,14 +176,14 @@ const fetchProfile = async () => {
               </div>
 <div className="2xl:text-3xl font-bold mb-1">
   {loaded ? "..." : (
-    profile.role ? (
+    profile?.role ? (
       <>
           <div className="text-xs text-muted-foreground">
             Promoted to: {capitalizeRole(profile.role)}
           </div>
       </>
     ) : (
-      profile.myRole ? capitalizeRole(profile.myRole) : "User"
+      profile?.myRole ? capitalizeRole(profile.myRole) : "User"
     )
   )}
 </div>
