@@ -125,22 +125,27 @@ const handlePromote = async () => {
     });
   }
 
-  const { data, error } = await supabase
-    .from("user_roles")
-    .update({ role })
-    .eq("user_id", selectedUser)
-      .select(); // 👈 IMPORTANT
+const { data, error } = await supabase
+  .from("user_roles")
+  .update({ role })
+  .eq("user_id", selectedUser)
+  .select();
 
-console.log("UPDATED ROWS:", data);
+if (error) {
+  return toast({
+    title: "Error",
+    description: error.message,
+    variant: "destructive",
+  });
+}
 
-  if (error) {
-    return toast({
-      title: "Error",
-      description: error.message,
-      variant: "destructive",
-    });
-  }
-
+if (!data || data.length === 0) {
+  return toast({
+    title: "Blocked",
+    description: "You are not allowed to change this role",
+    variant: "destructive",
+  });
+}
   await logAudit({
     action: `Updated user role to ${role}`,
     entityType: "user_roles",
