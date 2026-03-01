@@ -94,16 +94,6 @@ const handleSignup = async (e: React.FormEvent) => {
         });
 
       if (profileError) throw profileError;
-
-      // 2️⃣ Upsert role (SAFE)
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .upsert({
-          user_id: user.id,
-          role: role, // 'Innovator', 'User', etc.
-        });
-
-      if (roleError) throw roleError;
     }
 
     toast({
