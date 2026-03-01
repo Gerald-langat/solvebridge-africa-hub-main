@@ -105,14 +105,14 @@ export default function AdminDashboard() {
     metadata,
   });
 };
-
 const handlePromote = async () => {
-  if (!selectedUser)
+  if (!selectedUser) {
     return toast({
       title: "Error",
       description: "Select a user",
       variant: "destructive",
     });
+  }
 
   // Only super admins can promote to super_admin
   if (role === "super_admin" && user.role !== "super_admin") {
@@ -123,71 +123,33 @@ const handlePromote = async () => {
     });
   }
 
-  try {
-    // Check if role exists
-    const { data: existingRole, error: fetchError } = await supabase
-      .from("user_roles")
-      .select("id")
-      .eq("user_id", selectedUser)
-      .maybeSingle(); // safer than single()
+  const { error } = await supabase
+    .from("user_roles")
+    .update({ role })
+    .eq("user_id", selectedUser);
 
-    if (fetchError) {
-      return toast({
-        title: "Error",
-        description: fetchError.message,
-        variant: "destructive",
-      });
-    }
-
-    if (existingRole) {
-      // ✅ UPDATE (promotion)
-      const { error } = await supabase
-        .from("user_roles")
-        .update({ role })
-        .eq("user_id", selectedUser);
-
-      if (error)
-        return toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-    } else {
-      // ✅ INSERT (super admin allowed)
-      const { error } = await supabase
-        .from("user_roles")
-        .insert({ user_id: selectedUser, role });
-
-      if (error)
-        return toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-    }
-
-    await logAudit({
-      action: `Updated user role to ${role}`,
-      entityType: "user_roles",
-      entityId: selectedUser,
-      metadata: { new_role: role },
-    });
-
-    toast({
-      title: "Success",
-      description: `User role updated to ${role}`,
-    });
-
-    setIsCreateUserOpen(false);
-  } catch (err: any) {
-    toast({
+  if (error) {
+    return toast({
       title: "Error",
-      description: err.message || "Unknown error",
+      description: error.message,
       variant: "destructive",
     });
   }
-};
 
+  await logAudit({
+    action: `Updated user role to ${role}`,
+    entityType: "user_roles",
+    entityId: selectedUser,
+    metadata: { new_role: role },
+  });
+
+  toast({
+    title: "Success",
+    description: `User role updated to ${role}`,
+  });
+
+  setIsCreateUserOpen(false);
+};
 
 
   const statCards = [
