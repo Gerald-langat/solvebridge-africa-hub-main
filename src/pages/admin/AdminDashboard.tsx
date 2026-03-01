@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
+type UserRole = 'contributor' | 'moderator' | 'admin' | 'super_admin' | 'program_manager';
 
 
 export default function AdminDashboard() {
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
 
   // Create user states
-  const [role, setRole] = useState<UserRole>("problem_submitter");
+  const [role, setRole] = useState<UserRole>("contributor");
     const [users, setUsers] = useState<any[]>([]);
  const [selectedUser, setSelectedUser] = useState<string>("");
 
@@ -110,36 +110,61 @@ console.log("Selected user for promotion:", selectedUser);
 
   // Create User logic
 const handlePromote = async () => {
-  if (!selectedUser) return alert("Select a user");
+  if (!selectedUser) return toast({ title: "Error", description: "Select a user", variant: "destructive" });
 
-  const roleToDb = (role: UserRole) => {
-    if (role === "super_admin") return "moderator";
-    return role;
-  };
-
-  const newRole = roleToDb(role);
-
-  const { error } = await supabase
-    .from("user_roles")
-    .upsert({ user_id: selectedUser, role: newRole });
-
-  if (error) {
-    toast({ title: "Error", description: error.message, variant: "destructive" });
-    return;
+  // Only super admins can promote to super_admin
+  if (role === "super_admin" && user.role !== "super_admin") {
+    return toast({ title: "Error", description: "Only super admins can promote to Super Admin", variant: "destructive" });
   }
 
-  // 🔥 AUDIT LOG
-  await logAudit({
-    action: `Promoted user to ${newRole}`,
-    entityType: "user_roles",
-    entityId: selectedUser,
-    metadata: {
-      new_role: newRole,
-    },
-  });
+  try {
+    const { data: existingRole, error: fetchError } = await supabase
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", selectedUser)
+      .maybeSingle(); // safer than single()
 
-  toast({ title: "User role updated successfully!" });
-  setIsCreateUserOpen(false);
+    if (fetchError) throw fetchError;
+
+    if (existingRole) {
+      // ✅ UPDATE existing role
+      const { data, error } = await supabase
+        .from("user_roles")
+        .update({ role })
+        .eq("user_id", selectedUser)
+        .select();
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        throw new Error("You are not allowed to change this role");
+      }
+    } else {
+      // ✅ INSERT new role (only self)
+      if (selectedUser !== user.id) {
+        throw new Error("Cannot insert role for another user");
+      }
+
+      const { error: insertError } = await supabase
+        .from("user_roles")
+        .insert({ user_id: selectedUser, role });
+
+      if (insertError) throw insertError;
+    }
+
+    // 🔥 Log audit
+    await logAudit({
+      action: `Updated user role to ${role}`,
+      entityType: "user_roles",
+      entityId: selectedUser,
+      metadata: { new_role: role },
+    });
+
+    toast({ title: "Success", description: `User role updated to ${role}` });
+    setIsCreateUserOpen(false);
+  } catch (err: any) {
+    toast({ title: "Error", description: err.message, variant: "destructive" });
+  }
 };
 
 
@@ -211,6 +236,7 @@ const handlePromote = async () => {
         <SelectContent>
           <SelectItem value="super_admin">Super Admin</SelectItem>
           <SelectItem value="moderator">Moderator</SelectItem>
+          <SelectItem value="admin">Admin</SelectItem>
           <SelectItem value="program_manager">Program Manager</SelectItem>
         </SelectContent>
       </Select>
