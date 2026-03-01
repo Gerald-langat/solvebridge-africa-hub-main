@@ -33,7 +33,7 @@ export default function Dashboard() {
 const fetchProfile = async () => {
   setLoaded(true);
 
-  // Fetch profile with embedded roles
+  // 1️⃣ Fetch profile
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("*")
@@ -46,21 +46,21 @@ const fetchProfile = async () => {
     return;
   }
 
-  const { data: userData, error: userDataError } = await supabase
+  // 2️⃣ Fetch role
+  const { data: roleData, error: roleError } = await supabase
     .from("user_roles")
-    .select("*")
+    .select("role")
     .eq("user_id", user?.id)
     .single();
 
+  // 3️⃣ Set profile
   setProfile({
     ...profileData,
-    // map roles or fallback to "user"
-    roles: userData?.map((r: any) => r.role) || ["user"],
+    role: roleData?.role || "user", // ✅ correct
   });
 
   setLoaded(false);
 };
-
   const fetchStats = async () => {
     const { data: problems } = await supabase
       .from("problems")
