@@ -174,21 +174,19 @@ const fetchProfile = async () => {
                   <Users className="text-secondary" size={24} />
                 </div>
               </div>
-               <div className="2xl:text-3xl font-bold mb-1">
-  {loaded ? "..." : (
-    <>
-      {/* Always show the base role */}
-      {profile?.myRole ? capitalizeRole(profile.myRole) : "User"}
+              <div className="2xl:text-3xl font-bold mb-1">
+                {loaded ? "..." : (
+                  <>
+                    {/* Always show the base role */}
+                    {profile?.myRole ? capitalizeRole(profile.myRole) : "User"}
 
-      {/* Only show promoted role if it exists */}
-
-        <div className={` ${!profile?.role ? "hidden" : "text-xs text-muted-foreground"}`}>
-          Promoted to: {capitalizeRole(profile.role)}
-        </div>
-
-    </>
-  )}
-</div>
+                    {/* Only show promoted role if it exists */}
+                    <div className={`${!profile?.role ? "hidden" : "text-xs text-muted-foreground"}`}>
+                      Promoted to: {capitalizeRole(profile.role)}
+                    </div>
+                  </>
+                )}
+              </div>
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>
