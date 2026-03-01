@@ -159,16 +159,16 @@ if (myRole !== "super_admin") {
 
     if (fetchError) throw fetchError;
 
-  if (existingRole) {
-  await supabase
-    .from("user_roles")
-    .update({ role })
-    .eq("user_id", selectedUser);
-} else {
-  await supabase
-    .from("user_roles")
-    .insert({ user_id: selectedUser, role });
-}
+      if (existingRole) {
+      await supabase
+        .from("user_roles")
+        .update({ role })
+        .eq("user_id", selectedUser);
+    } else {
+      await supabase
+        .from("user_roles")
+        .insert({ user_id: selectedUser, role });
+    }
     // 🔥 Audit log
     await logAudit({
       action: `Assigned role '${role}' to user`,
@@ -231,9 +231,9 @@ if (myRole !== "super_admin") {
           <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Create User</DialogTitle>
+                <DialogTitle>Promote User</DialogTitle>
                 <DialogDescription>
-                  Create a new user Role (super_admin, moderator, program_manager)
+                  Promote a user to a new role (super_admin, moderator, program_manager)
                 </DialogDescription>
               </DialogHeader>
 
