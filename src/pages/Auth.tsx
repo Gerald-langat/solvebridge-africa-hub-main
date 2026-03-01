@@ -90,6 +90,7 @@ const handleSignup = async (e: React.FormEvent) => {
           first_name: firstName,
           last_name: lastName,
           email: signupEmail,
+          myRole: role
         });
 
       if (profileError) throw profileError;
