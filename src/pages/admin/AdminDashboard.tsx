@@ -107,9 +107,14 @@ export default function AdminDashboard() {
 };
 
 const handlePromote = async () => {
-  if (!selectedUser) return toast({ title: "Error", description: "Select a user", variant: "destructive" });
+  if (!selectedUser)
+    return toast({
+      title: "Error",
+      description: "Select a user",
+      variant: "destructive",
+    });
 
-  // Only allow super admins to promote to Super Admin
+  // Only super admins can promote to super_admin
   if (role === "super_admin" && user.role !== "super_admin") {
     return toast({
       title: "Error",
@@ -119,52 +124,67 @@ const handlePromote = async () => {
   }
 
   try {
-    // 1️⃣ Check if the selected user already has a role
+    // Check if role exists
     const { data: existingRole, error: fetchError } = await supabase
       .from("user_roles")
-      .select("role")
+      .select("id")
       .eq("user_id", selectedUser)
-      .single();
+      .maybeSingle(); // safer than single()
 
-    if (fetchError && fetchError.code !== "PGRST116") { // PGRST116 = no rows found
-      return toast({ title: "Error", description: fetchError.message, variant: "destructive" });
+    if (fetchError) {
+      return toast({
+        title: "Error",
+        description: fetchError.message,
+        variant: "destructive",
+      });
     }
 
-    // 2️⃣ Determine whether to insert or update
     if (existingRole) {
-      // ✅ Update existing role (promotion)
-      const { error: updateError } = await supabase
+      // ✅ UPDATE (promotion)
+      const { error } = await supabase
         .from("user_roles")
         .update({ role })
         .eq("user_id", selectedUser);
 
-      if (updateError) return toast({ title: "Error", description: updateError.message, variant: "destructive" });
+      if (error)
+        return toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
     } else {
-      // ✅ Insert new role
-      // Users can only insert their own role
-      if (selectedUser !== user.id) {
-        return toast({ title: "Error", description: "Cannot insert role for another user", variant: "destructive" });
-      }
-
-      const { error: insertError } = await supabase
+      // ✅ INSERT (super admin allowed)
+      const { error } = await supabase
         .from("user_roles")
         .insert({ user_id: selectedUser, role });
 
-      if (insertError) return toast({ title: "Error", description: insertError.message, variant: "destructive" });
+      if (error)
+        return toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
     }
 
-    // 3️⃣ Log audit
     await logAudit({
-      action: `Promoted user to ${role}`,
+      action: `Updated user role to ${role}`,
       entityType: "user_roles",
       entityId: selectedUser,
       metadata: { new_role: role },
     });
 
-    toast({ title: "Success", description: `User role updated to ${role}` });
+    toast({
+      title: "Success",
+      description: `User role updated to ${role}`,
+    });
+
     setIsCreateUserOpen(false);
   } catch (err: any) {
-    toast({ title: "Error", description: err.message || "Unknown error", variant: "destructive" });
+    toast({
+      title: "Error",
+      description: err.message || "Unknown error",
+      variant: "destructive",
+    });
   }
 };
 
