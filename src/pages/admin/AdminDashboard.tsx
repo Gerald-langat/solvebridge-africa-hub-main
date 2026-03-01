@@ -45,6 +45,7 @@ export default function AdminDashboard() {
   const [role, setRole] = useState<UserRole>("contributor");
     const [users, setUsers] = useState<any[]>([]);
  const [selectedUser, setSelectedUser] = useState<string>("");
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     fetchStats();
@@ -69,6 +70,26 @@ export default function AdminDashboard() {
       pendingModeration: pending.data?.length || 0
     });
   };
+
+  const fetchProfile = async () => {
+    // 2️⃣ Fetch role
+    const { data: roleData, error: roleError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user?.id)
+      .single();
+  
+    // 3️⃣ Set profile
+    setProfile(roleData?.role || null
+    );
+  
+  };
+
+   useEffect(() => {
+      if (user) {
+        fetchProfile();
+      }
+    }, [user]);
 
   const fetchRecentActivity = async () => {
     const { data } = await supabase
@@ -119,7 +140,7 @@ const handlePromote = async () => {
   }
 
   // Only super admins can assign roles
-  if (user.role !== "super_admin") {
+  if (profile.role !== "super_admin") {
     return toast({
       title: "Error",
       description: "Only Super Admins can assign or update roles",
