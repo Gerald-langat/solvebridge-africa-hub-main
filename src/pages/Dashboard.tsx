@@ -174,25 +174,25 @@ const fetchProfile = async () => {
                   <Users className="text-secondary" size={24} />
                 </div>
               </div>
-<div className="2xl:text-3xl font-bold mb-1">
-  {loaded ? "..." : (
-    profile ? (
-      <>
-        {/* Always show the base role */}
-        {profile.role && capitalizeRole(profile.role)}
+            <div className="2xl:text-3xl font-bold mb-1">
+              {loaded ? "..." : (
+                profile ? (
+                  <>
+                    {/* Always show the base role */}
+                    {profile.role && capitalizeRole(profile.role)}
 
-        {/* Only show promoted role if it exists */}
-        {profile.myRole && (
-          <>
-         {capitalizeRole(profile.myRole)}
-          </>
-        )}
-      </>
-    ) : (
-      null
-    )
-  )}
-</div>
+                    {/* Only show promoted role if it exists */}
+                    {profile.myRole && (
+                      <>
+                    {capitalizeRole(profile.myRole)}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  null
+                )
+              )}
+            </div>
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
           </div>
