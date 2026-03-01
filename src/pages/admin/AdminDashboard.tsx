@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
+type UserRole = "Super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
 
 
 export default function AdminDashboard() {
@@ -111,7 +111,8 @@ const handlePromote = async () => {
   if (!selectedUser) return alert("Select a user");
 
   const roleToDb = (role: UserRole) => {
-    if (role === "Super_admin" && user.role !== "Super_admin")
+if (role === "Super_admin" && user.role !== "Super_admin")
+  toast({ title: "Error", description: "Only super admins can promote to Super Admin", variant: "destructive" });
     return role;
   };
 
