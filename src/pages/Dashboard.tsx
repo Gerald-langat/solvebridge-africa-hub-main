@@ -179,7 +179,7 @@ const fetchProfile = async () => {
     profile ? (
       <>
         {/* Always show the base role */}
-        {profile.role ? capitalizeRole(profile.role) : "User"}
+        {profile.role && capitalizeRole(profile.role)}
 
         {/* Only show promoted role if it exists */}
         {profile.myRole && (
@@ -189,7 +189,7 @@ const fetchProfile = async () => {
         )}
       </>
     ) : (
-      "User" // fallback if profile is null
+      null
     )
   )}
 </div>
