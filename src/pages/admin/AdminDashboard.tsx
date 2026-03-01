@@ -117,7 +117,7 @@ const handlePromote = async () => {
   }
 
   // Only super admins can promote to super_admin
-  if (role === "super_admin" && user.role !== "super_admin") {
+  if (role === "super_admin") {
     return toast({
       title: "Error",
       description: "Only super admins can promote to Super Admin",
