@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-type UserRole = "Super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter" | "moderator";
+type UserRole = "Super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter" | "moderator" | "program_manager";
 
 
 export default function AdminDashboard() {
