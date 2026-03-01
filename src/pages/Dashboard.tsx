@@ -179,7 +179,7 @@ const fetchProfile = async () => {
               <>
                 {profile?.myRole ? capitalizeRole(profile.myRole) : "User"}
                 {profile?.role && (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs text-muted-foreground">
                     Promoted to: {capitalizeRole(profile.role)}
                   </div>
                 )}
