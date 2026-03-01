@@ -106,6 +106,8 @@ export default function AdminDashboard() {
   });
 };
 
+console.log("Selected user for promotion:", selectedUser);
+
   // Create User logic
 const handlePromote = async () => {
   if (!selectedUser) return alert("Select a user");
