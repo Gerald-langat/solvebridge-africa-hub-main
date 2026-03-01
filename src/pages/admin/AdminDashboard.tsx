@@ -108,59 +108,62 @@ export default function AdminDashboard() {
 
 
 const handlePromote = async () => {
-  if (!selectedUser) {
-    return toast({
-      title: "Error",
-      description: "Select a user",
-      variant: "destructive",
-    });
-  }
+  if (!selectedUser) return toast({ title: "Error", description: "Select a user", variant: "destructive" });
 
   // Only super admins can promote to super_admin
-  if (role === "super_admin") {
-    return toast({
-      title: "Error",
-      description: "Only super admins can promote to Super Admin",
-      variant: "destructive",
-    });
+  if (role === "super_admin" && user.role !== "super_admin") {
+    return toast({ title: "Error", description: "Only super admins can promote to Super Admin", variant: "destructive" });
   }
 
-const { data, error } = await supabase
-  .from("user_roles")
-  .update({ role })
-  .eq("user_id", selectedUser)
-  .select();
+  try {
+    const { data: existingRole, error: fetchError } = await supabase
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", selectedUser)
+      .maybeSingle(); // safer than single()
 
-if (error) {
-  return toast({
-    title: "Error",
-    description: error.message,
-    variant: "destructive",
-  });
-}
+    if (fetchError) throw fetchError;
 
-if (!data || data.length === 0) {
-  return toast({
-    title: "Blocked",
-    description: "You are not allowed to change this role",
-    variant: "destructive",
-  });
-}
-  await logAudit({
-    action: `Updated user role to ${role}`,
-    entityType: "user_roles",
-    entityId: selectedUser,
-    metadata: { new_role: role },
-  });
+    if (existingRole) {
+      // ✅ UPDATE existing role
+      const { data, error } = await supabase
+        .from("user_roles")
+        .update({ role })
+        .eq("user_id", selectedUser)
+        .select();
 
-  toast({
-    title: "Success",
-    description: `User role updated to ${role}`,
-  });
+      if (error) throw error;
 
-  setIsCreateUserOpen(false);
+      if (!data || data.length === 0) {
+        throw new Error("You are not allowed to change this role");
+      }
+    } else {
+      // ✅ INSERT new role (only self)
+      if (selectedUser !== user.id) {
+        throw new Error("Cannot insert role for another user");
+      }
+
+      const { error: insertError } = await supabase
+        .from("user_roles")
+        .insert({ user_id: selectedUser, role });
+
+      if (insertError) throw insertError;
+    }
+
+    // 🔥 Log audit
+    await logAudit({
+      action: `Updated user role to ${role}`,
+      entityType: "user_roles",
+      entityId: selectedUser,
+      metadata: { new_role: role },
+    });
+
+    toast({ title: "Success", description: `User role updated to ${role}` });
+    setIsCreateUserOpen(false);
+  } catch (err: any) {
+    toast({ title: "Error", description: err.message, variant: "destructive" });
+  }
 };
-
 
   const statCards = [
     { label: "Total Submissions", value: stats.totalSubmissions, icon: FileText, color: "text-blue-600" },
