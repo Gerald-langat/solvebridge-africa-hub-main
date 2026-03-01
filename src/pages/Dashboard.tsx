@@ -181,11 +181,11 @@ const fetchProfile = async () => {
       {profile?.myRole ? capitalizeRole(profile.myRole) : "User"}
 
       {/* Only show promoted role if it exists */}
-      {profile?.role && (
-        <div className={`text-xs text-muted-foreground ${!profile?.role ? "hidden" : ""}`}>
+
+        <div className={` ${!profile?.role ? "hidden" : "text-xs text-muted-foreground"}`}>
           Promoted to: {capitalizeRole(profile.role)}
         </div>
-      )}
+
     </>
   )}
 </div>
