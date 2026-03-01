@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-type UserRole = "Super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter";
+type UserRole = "super_admin" | "admin" | "mentor" | "innovator" | "problem_submitter" | "moderator";
 
 
 export default function AdminDashboard() {
@@ -106,39 +106,66 @@ export default function AdminDashboard() {
   });
 };
 
-  // Create User logic
 const handlePromote = async () => {
-  if (!selectedUser) return alert("Select a user");
+  if (!selectedUser) return toast({ title: "Error", description: "Select a user", variant: "destructive" });
 
-  const roleToDb = (role: UserRole) => {
-if (role === "Super_admin" && user.role !== "Super_admin")
-  toast({ title: "Error", description: "Only super admins can promote to Super Admin", variant: "destructive" });
-    return role;
-  };
-
-  const newRole = roleToDb(role);
-
-  const { error } = await supabase
-    .from("user_roles")
-    .upsert({ user_id: selectedUser, role: newRole });
-
-  if (error) {
-    toast({ title: "Error", description: error.message, variant: "destructive" });
-    return;
+  // Only allow super admins to promote to Super Admin
+  if (role === "super_admin" && user.role !== "super_admin") {
+    return toast({
+      title: "Error",
+      description: "Only super admins can promote to Super Admin",
+      variant: "destructive",
+    });
   }
 
-  // 🔥 AUDIT LOG
-  await logAudit({
-    action: `Promoted user to ${newRole}`,
-    entityType: "user_roles",
-    entityId: selectedUser,
-    metadata: {
-      new_role: newRole,
-    },
-  });
+  try {
+    // 1️⃣ Check if the selected user already has a role
+    const { data: existingRole, error: fetchError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", selectedUser)
+      .single();
 
-  toast({ title: "User role updated successfully!" });
-  setIsCreateUserOpen(false);
+    if (fetchError && fetchError.code !== "PGRST116") { // PGRST116 = no rows found
+      return toast({ title: "Error", description: fetchError.message, variant: "destructive" });
+    }
+
+    // 2️⃣ Determine whether to insert or update
+    if (existingRole) {
+      // ✅ Update existing role (promotion)
+      const { error: updateError } = await supabase
+        .from("user_roles")
+        .update({ role })
+        .eq("user_id", selectedUser);
+
+      if (updateError) return toast({ title: "Error", description: updateError.message, variant: "destructive" });
+    } else {
+      // ✅ Insert new role
+      // Users can only insert their own role
+      if (selectedUser !== user.id) {
+        return toast({ title: "Error", description: "Cannot insert role for another user", variant: "destructive" });
+      }
+
+      const { error: insertError } = await supabase
+        .from("user_roles")
+        .insert({ user_id: selectedUser, role });
+
+      if (insertError) return toast({ title: "Error", description: insertError.message, variant: "destructive" });
+    }
+
+    // 3️⃣ Log audit
+    await logAudit({
+      action: `Promoted user to ${role}`,
+      entityType: "user_roles",
+      entityId: selectedUser,
+      metadata: { new_role: role },
+    });
+
+    toast({ title: "Success", description: `User role updated to ${role}` });
+    setIsCreateUserOpen(false);
+  } catch (err: any) {
+    toast({ title: "Error", description: err.message || "Unknown error", variant: "destructive" });
+  }
 };
 
 
@@ -202,14 +229,19 @@ if (role === "Super_admin" && user.role !== "Super_admin")
         </SelectContent>
       </Select>
 
+
       <Label className="mt-4">Select Role</Label>
       <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
         <SelectTrigger>
           <SelectValue placeholder="Select role" />
         </SelectTrigger>
         <SelectContent>
+
           <SelectItem value="super_admin">Super Admin</SelectItem>
           <SelectItem value="moderator">Moderator</SelectItem>
+          <SelectItem value="admin">Admin</SelectItem>
+          <SelectItem value="mentor">Mentor</SelectItem>
+          <SelectItem value="innovator">Innovator</SelectItem>
           <SelectItem value="program_manager">Program Manager</SelectItem>
         </SelectContent>
       </Select>
