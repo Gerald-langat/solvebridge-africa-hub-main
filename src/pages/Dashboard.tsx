@@ -36,7 +36,7 @@ const fetchProfile = async () => {
   // Fetch profile with embedded roles
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("*, user_roles(role)")
+    .select("*")
     .eq("id", user?.id)
     .single();
 
@@ -46,10 +46,16 @@ const fetchProfile = async () => {
     return;
   }
 
+  const { data: userData, error: userDataError } = await supabase
+    .from("user_roles")
+    .select("*")
+    .eq("user_id", user?.id)
+    .single();
+
   setProfile({
     ...profileData,
     // map roles or fallback to "user"
-    roles: profileData?.user_roles?.map((r: any) => r.role) || ["user"],
+    roles: userData?.map((r: any) => r.role) || ["user"],
   });
 
   setLoaded(false);
