@@ -170,8 +170,8 @@ const fetchProfile = async () => {
         <div className="2xl:text-3xl font-bold mb-1">
           {loaded
             ? "..."
-            : ((profile?.role || "user").charAt(0).toUpperCase() +
-              (profile?.role || "user").slice(1))}
+            : ((profile?.role || profile?.myRole || "user").charAt(0).toUpperCase() +
+              (profile?.role || profile?.myRole || "user").slice(1))}
         </div>
               <div className="text-sm text-muted-foreground">Your Role</div>
             </Card>
