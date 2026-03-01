@@ -71,6 +71,7 @@ const handleSignup = async (e: React.FormEvent) => {
         data: {
           first_name: firstName,
           last_name: lastName,
+          role: role, // ✅ store role in auth metadata
         },
       },
     });
