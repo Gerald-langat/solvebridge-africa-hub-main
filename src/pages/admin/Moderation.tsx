@@ -114,7 +114,7 @@ if (error) {
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to decline problem", error: error.message, // 👈 SHOW REAL ERROR
+        description: `Failed to decline problem: ${error.message}`,
         variant: "destructive"
       });
     } else {
