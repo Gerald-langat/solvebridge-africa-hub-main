@@ -141,34 +141,34 @@ const handlePromote = async () => {
   }
 
   // Only super admins can assign roles
-if (myRole !== "super_admin") {
-  return toast({
-    title: "Error",
-    description: "Only Super Admins can assign or update roles",
-    variant: "destructive",
-  });
-}
+  if (myRole !== "super_admin") {
+    return toast({
+      title: "Error",
+      description: "Only Super Admins can assign or update roles",
+      variant: "destructive",
+    });
+  }
 
   try {
-    // Check if the selected user already has a role
-    const { data: existingRole, error: fetchError } = await supabase
+    const { data, error } = await supabase
       .from("user_roles")
-      .select("id")
-      .eq("user_id", selectedUser)
-      .maybeSingle();
+      .upsert(
+        {
+          user_id: selectedUser,
+          role,
+        },
+        {
+          onConflict: "user_id",
+        }
+      )
+      .select(); // 🔥 important for detecting RLS blocks
 
-    if (fetchError) throw fetchError;
+    if (error) throw error;
 
-      if (existingRole) {
-      await supabase
-        .from("user_roles")
-        .update({ role })
-        .eq("user_id", selectedUser);
-    } else {
-      await supabase
-        .from("user_roles")
-        .insert({ user_id: selectedUser, role });
+    if (!data || data.length === 0) {
+      throw new Error("You are not allowed to update this role");
     }
+
     // 🔥 Audit log
     await logAudit({
       action: `Assigned role '${role}' to user`,
@@ -181,6 +181,7 @@ if (myRole !== "super_admin") {
       title: "Success",
       description: `User role updated to ${role}`,
     });
+
     setIsCreateUserOpen(false);
   } catch (err: any) {
     toast({
