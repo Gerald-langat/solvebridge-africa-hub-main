@@ -139,17 +139,6 @@ const handlePromote = async () => {
       if (!data || data.length === 0) {
         throw new Error("You are not allowed to change this role");
       }
-    } else {
-      // ✅ INSERT new role (only self)
-      if (selectedUser !== user.id) {
-        throw new Error("Cannot insert role for another user");
-      }
-
-      const { error: insertError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: selectedUser, role });
-
-      if (insertError) throw insertError;
     }
 
     // 🔥 Log audit
