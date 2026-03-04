@@ -22,38 +22,33 @@ export default function ProblemDetail() {
     const [loading, setLoading] = useState(true);
   
     useEffect(() => {
-      // Wait for auth to settle
-      if (loading) return;
-  
-      // Not logged in
       if (!user) {
         setRoles(null);
         setLoading(false);
         return;
       }
-  
+
       const fetchRoles = async () => {
         setLoading(true);
-  
         const { data, error } = await supabase
           .from("profiles")
           .select("myRole")
-          .eq("id", user.id);
-  
-          console.log("user roles:", data);
-  
+          .eq("id", user.id)
+          .single(); // use .single() to get a single object instead of array
+
         if (error) {
-          console.error("Error fetching roles:", error);
+          console.error("Error fetching role:", error);
           setRoles(null);
         } else {
-          setRoles((data ?? []).map(r => r.myRole as UserRole));
+          // myRole is a single value string
+          setRoles([data.myRole as UserRole]);
         }
-  
+
         setLoading(false);
       };
-  
+
       fetchRoles();
-    }, [user, loading]);
+    }, [user]);
 
   // Fetch problem
   const { data: problem, isLoading } = useQuery({
@@ -251,17 +246,19 @@ const recordView = async (problemId: number) => {
                 </div>
               )}
 
-              {canProposeSolution && problem.status === "validated" && (
-                <div className="pt-6 border-t">
-                  <Button
-                    size="lg"
-                    onClick={() => navigate(`/submit-solution/${id}`)}
-                    className="w-full sm:w-auto"
-                  >
-                    Propose Solution
-                  </Button>
-                </div>
-              )}
+              {!loading &&
+                canProposeSolution &&
+                problem.status === "validated" && (
+                  <div className="pt-6 border-t">
+                    <Button
+                      size="lg"
+                      onClick={() => navigate(`/submit-solution/${id}`)}
+                      className="w-full sm:w-auto"
+                    >
+                      Propose Solution
+                    </Button>
+                  </div>
+                )}
             </CardContent>
           </Card>
 
