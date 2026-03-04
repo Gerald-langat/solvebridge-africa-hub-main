@@ -83,9 +83,9 @@ const { count: partnersCount } = await supabase
   .select("*", { count: "exact", head: true });
 
 const { count: innovators } = await supabase
-  .from("user_roles")
+.from("profiles")
   .select("*", { count: "exact", head: true })
-  .eq("role", "Innovator");
+  .eq("myRole", "Innovator");
 
 setStats({
   submittedProblems: problemsCount || 0,
