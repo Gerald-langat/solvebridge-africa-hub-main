@@ -62,6 +62,7 @@ export default function Partners() {
         logo_url: "",
         access_level: "read only",
         notes: "",
+        
       });
     },
     onError: (error: any) => {
@@ -107,6 +108,7 @@ const handleSubmit = (e: React.FormEvent) => {
 
   createPartner.mutate({
     ...formData,
+    user_id: user?.id,
     status,
   });
 };
