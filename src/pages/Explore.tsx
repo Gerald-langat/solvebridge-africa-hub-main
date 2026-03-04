@@ -250,7 +250,13 @@ useEffect(() => {
                             {item.status.replace("_", " ")}
                           </Badge>
                           <Badge variant="outline" className="capitalize">
-                            {item.sector || item.tags}
+                            {item.sector || item.tags && item.tags.length > 0 && (
+                    <div className="flex gap-2 mt-4 flex-wrap">
+                      {item.tags.map((tag: string, i: number) => (
+                        <Badge key={i} variant="outline">{tag}</Badge>
+                      ))}
+                    </div>
+                  )}
                           </Badge>
                            <Button
                         variant="ghost"
