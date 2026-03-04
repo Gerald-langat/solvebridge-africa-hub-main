@@ -100,7 +100,7 @@ const recordView = async (problemId: number) => {
     );
   }
 
-  const canProposeSolution = hasRole('Innovator') || hasRole('Super_admin');
+  const canProposeSolution = hasRole('innovator') || hasRole('super_admin');
 
   return (
     <ProtectedRoute>
@@ -108,7 +108,7 @@ const recordView = async (problemId: number) => {
         <div className="container mx-auto py-8 px-4 max-w-5xl">
           <Button
             variant="ghost"
-            onClick={() => navigate('/explore')}
+            onClick={() => navigate("/explore")}
             className="mb-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -119,12 +119,20 @@ const recordView = async (problemId: number) => {
             <CardHeader>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex-1">
-                  <CardTitle className="text-3xl mb-2">{problem.title}</CardTitle>
+                  <CardTitle className="text-3xl mb-2">
+                    {problem.title}
+                  </CardTitle>
                   {(problem as any).summary && (
-                    <CardDescription className="text-lg">{(problem as any).summary}</CardDescription>
+                    <CardDescription className="text-lg">
+                      {(problem as any).summary}
+                    </CardDescription>
                   )}
                 </div>
-                <Badge variant={problem.status === 'validated' ? 'default' : 'secondary'}>
+                <Badge
+                  variant={
+                    problem.status === "validated" ? "default" : "secondary"
+                  }
+                >
                   {problem.status}
                 </Badge>
               </div>
@@ -134,7 +142,19 @@ const recordView = async (problemId: number) => {
                   {problem.location}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{problem.sector}</Badge>
+                  {problem.sector ? (
+                    <Badge variant="outline" className="capitalize">
+                      {problem.sector}
+                    </Badge>
+                  ) : problem.tags && problem.tags.length > 0 ? (
+                    <div className="flex gap-2 mt-2 flex-wrap">
+                      {problem.tags.map((tag: string, i: number) => (
+                        <Badge key={i} variant="outline" className="capitalize">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </CardHeader>
@@ -149,8 +169,12 @@ const recordView = async (problemId: number) => {
               )}
 
               <div>
-                <h3 className="text-xl font-semibold mb-3">Problem Description</h3>
-                <p className="text-foreground leading-relaxed">{problem.description}</p>
+                <h3 className="text-xl font-semibold mb-3">
+                  Problem Description
+                </h3>
+                <p className="text-foreground leading-relaxed">
+                  {problem.description}
+                </p>
               </div>
 
               {(problem as any).target_audience && (
@@ -159,7 +183,9 @@ const recordView = async (problemId: number) => {
                     <Users className="h-5 w-5" />
                     Target Audience
                   </h3>
-                  <p className="text-foreground">{(problem as any).target_audience}</p>
+                  <p className="text-foreground">
+                    {(problem as any).target_audience}
+                  </p>
                 </div>
               )}
 
@@ -169,18 +195,24 @@ const recordView = async (problemId: number) => {
                     <Target className="h-5 w-5" />
                     Impact Scale
                   </h3>
-                  <Badge variant="secondary">{(problem as any).impact_scale}</Badge>
+                  <Badge variant="secondary">
+                    {(problem as any).impact_scale}
+                  </Badge>
                 </div>
               )}
 
               {(problem as any).stakeholders && (
                 <div>
-                  <h3 className="text-xl font-semibold mb-3">Key Stakeholders</h3>
-                  <p className="text-foreground">{(problem as any).stakeholders}</p>
+                  <h3 className="text-xl font-semibold mb-3">
+                    Key Stakeholders
+                  </h3>
+                  <p className="text-foreground">
+                    {(problem as any).stakeholders}
+                  </p>
                 </div>
               )}
 
-              {canProposeSolution && problem.status === 'validated' && (
+              {canProposeSolution && problem.status === "validated" && (
                 <div className="pt-6 border-t">
                   <Button
                     size="lg"
@@ -208,19 +240,29 @@ const recordView = async (problemId: number) => {
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div>
-                              <CardTitle className="text-lg">{solution.title}</CardTitle>
+                              <CardTitle className="text-lg">
+                                {solution.title}
+                              </CardTitle>
                               <CardDescription className="flex items-center space-x-4">
-                                by{creator.image && <img
-                                src={creator.image ?? "/avatar-placeholder.png"}
-                                alt="Profile"
-                              />} {creator?.first_name} {creator?.last_name}
+                                by
+                                {creator.image && (
+                                  <img
+                                    src={
+                                      creator.image ?? "/avatar-placeholder.png"
+                                    }
+                                    alt="Profile"
+                                  />
+                                )}{" "}
+                                {creator?.first_name} {creator?.last_name}
                               </CardDescription>
                             </div>
                             <Badge>{solution.status}</Badge>
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <p className="text-sm text-muted-foreground">{(solution as any).summary}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {(solution as any).summary}
+                          </p>
                         </CardContent>
                       </Card>
                     );
