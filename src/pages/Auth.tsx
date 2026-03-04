@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type ValidRole = "Super_admin" | "Moderator" | "Program_manager" | "Partner" | "Community_ambassador" | "Contributor" | "Innovator" | "Mentor";
+type ValidRole = "super_admin" | "moderator" | "program_manager" | "partner" | "community_ambassador" | "contributor" | "innovator" | "mentor";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function Auth() {
   const [signupPassword, setSignupPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState<ValidRole>("Contributor");
+  const [role, setRole] = useState<ValidRole>("contributor");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
