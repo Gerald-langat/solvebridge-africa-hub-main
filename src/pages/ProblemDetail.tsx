@@ -7,15 +7,53 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { useUserRole } from "@/hooks/useUserRole";
 import { Loader2, MapPin, Users, Target, ArrowLeft, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
+
+export type UserRole =
+  | "super_admin"
+  | "innovator";
 
 export default function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { hasRole } = useUserRole();
+    const [roles, setRoles] = useState<UserRole[] | null>(null);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      // Wait for auth to settle
+      if (loading) return;
+  
+      // Not logged in
+      if (!user) {
+        setRoles(null);
+        setLoading(false);
+        return;
+      }
+  
+      const fetchRoles = async () => {
+        setLoading(true);
+  
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("myRole")
+          .eq("id", user.id);
+  
+          console.log("user roles:", data);
+  
+        if (error) {
+          console.error("Error fetching roles:", error);
+          setRoles(null);
+        } else {
+          setRoles((data ?? []).map(r => r.myRole as UserRole));
+        }
+  
+        setLoading(false);
+      };
+  
+      fetchRoles();
+    }, [user, loading]);
 
   // Fetch problem
   const { data: problem, isLoading } = useQuery({
@@ -99,6 +137,7 @@ const recordView = async (problemId: number) => {
       </DashboardLayout>
     );
   }
+    const hasRole = (role: UserRole) => !!roles?.includes(role);
 
   const canProposeSolution = hasRole('innovator') || hasRole('super_admin');
 
