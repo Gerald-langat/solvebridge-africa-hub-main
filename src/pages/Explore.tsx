@@ -180,9 +180,12 @@ useEffect(() => {
       <DashboardLayout>
         <div className="space-y-8 animate-fade-in">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">Explore Problems/Bounties</h1>
+            <h1 className="text-4xl font-bold text-foreground">
+              Explore Problems/Bounties
+            </h1>
             <p className="text-muted-foreground mt-2">
-              Browse validated problems and Bounties and find collaboration opportunities
+              Browse validated problems and Bounties and find collaboration
+              opportunities
             </p>
           </div>
 
@@ -195,7 +198,7 @@ useEffect(() => {
                   <Input
                     placeholder="Search problems..."
                     value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -216,97 +219,121 @@ useEffect(() => {
             </CardContent>
           </Card>
 
-{isLoading && (
-  <div className="flex items-center justify-center py-20">
-    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-  </div>
-)}
+          {isLoading && (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          )}
 
           {/* Problems Grid */}
           {!isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {filteredItems.map((item, index) => (
                 <Card
                   key={item.id}
                   className={`hover-scale animate-scale-in transition-all ${
-                    item.type === "bounty" ? "border-[1px] border-yellow-300" : "shadow-soft"
+                    item.type === "bounty"
+                      ? "border-[1px] border-yellow-300"
+                      : "shadow-soft"
                   }`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                <CardHeader className="relative">
-                      <span
-                        className={`text-sm font-medium px-2 py-1 rounded-tl-md absolute left-0 top-0 ${
-                          item.type === "bounty"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
-                      >
-                        {item.type}
-                      </span>
-                      <div className="flex-1">
-                        <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant={getStatusColor(item.status)}>
-                            {item.status.replace("_", " ")}
-                          </Badge>
+                  <CardHeader className="relative">
+                    <span
+                      className={`text-sm font-medium px-2 py-1 rounded-tl-md absolute left-0 top-0 ${
+                        item.type === "bounty"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {item.type}
+                    </span>
+                    <div className="flex-1">
+                      <CardTitle className="text-xl mb-2">
+                        {item.title}
+                      </CardTitle>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant={getStatusColor(item.status)}>
+                          {item.status.replace("_", " ")}
+                        </Badge>
+                        {/* Show sector if it exists, otherwise show tags */}
+                        {item.sector ? (
                           <Badge variant="outline" className="capitalize">
-                            {item.sector || item.tags && item.tags.length > 0 && (
-                    <div className="flex gap-2 mt-4 flex-wrap">
-                      {item.tags.map((tag: string, i: number) => (
-                        <Badge key={i} variant="outline">{tag}</Badge>
-                      ))}
-                    </div>
-                  )}
+                            {item.sector}
                           </Badge>
-                           <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => toggleSaveItem(item.id, item.type)}
-                        className={savedItems.has(`${item.type}-${item.id}`) ? "text-primary ml-auto" : "ml-auto"}
-                      >
-                        <Bookmark className={`h-5 w-5 ${savedItems.has(`${item.type}-${item.id}`) ? "fill-current" : ""}`} />
-                      </Button>
-                        </div>
-                         
+                        ) : item.tags && item.tags.length > 0 ? (
+                          <div className="flex gap-2 mt-2 flex-wrap">
+                            {item.tags.map((tag: string, i: number) => (
+                              <Badge
+                                key={i}
+                                variant="outline"
+                                className="capitalize"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : null}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => toggleSaveItem(item.id, item.type)}
+                          className={
+                            savedItems.has(`${item.type}-${item.id}`)
+                              ? "text-primary ml-auto"
+                              : "ml-auto"
+                          }
+                        >
+                          <Bookmark
+                            className={`h-5 w-5 ${savedItems.has(`${item.type}-${item.id}`) ? "fill-current" : ""}`}
+                          />
+                        </Button>
                       </div>
-                    
-
-                    </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground line-clamp-3">{item.description}</p>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" /> {item.location || item.target_regions}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" /> {item.views_count || 0} views
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    <p className="text-muted-foreground line-clamp-3">
+                      {item.description}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />{" "}
+                        {item.location || item.target_regions}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-4 w-4" /> {item.views_count || 0}{" "}
+                        views
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 pt-2">
+                    <div className="flex gap-2 pt-2">
                       <Button
-            variant="default"
-            className="flex-1"
-            onClick={() =>
-              navigate(
-                item.type === "problem"
-                  ? `/problem/${item.id}`
-                  : `/bounty/${item.id}`
-              )
-            }
-          >
-            {item.type === "problem" ? "View Details" : "Submit Solution"}
-          </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-)}
+                        variant="default"
+                        className="flex-1"
+                        onClick={() =>
+                          navigate(
+                            item.type === "problem"
+                              ? `/problem/${item.id}`
+                              : `/bounty/${item.id}`,
+                          )
+                        }
+                      >
+                        {item.type === "problem"
+                          ? "View Details"
+                          : "Submit Solution"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
           {filteredItems.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">No validated problems or bounties found matching your criteria</p>
+                <p className="text-muted-foreground">
+                  No validated problems or bounties found matching your criteria
+                </p>
               </CardContent>
             </Card>
           )}
