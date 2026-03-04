@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Building2, GraduationCap, Heart, Briefcase } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const partnerTypes = [
   { value: "university", label: "University", icon: GraduationCap },
@@ -20,6 +21,7 @@ const partnerTypes = [
 ];
 
 export default function Partners() {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     type: "",
@@ -31,6 +33,7 @@ export default function Partners() {
   const registerMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const { error } = await supabase.from("partners").insert({
+        user_id: user?.id,
         name: data.name,
         contact_name: data.contact_name,
         contact_email: data.contact_email,
