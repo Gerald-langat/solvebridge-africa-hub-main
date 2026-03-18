@@ -120,7 +120,6 @@ const handlePaymentSuccess = async (details) => {
 
 
 
-
   const handleSubmit = async () => {
     if (!confirmed) {
       toast({
