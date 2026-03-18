@@ -120,8 +120,8 @@ const handlePaymentSuccess = async (details) => {
 
 
 
-  const handleSubmit = async () => {
-    if (!confirmed) {
+  const handleSubmit = async (skipConfirm = false) => {
+    if (!skipConfirm && !confirmed) {
       toast({
         title: "Confirmation required",
         description: "Please confirm the accuracy of your information",
@@ -129,37 +129,37 @@ const handlePaymentSuccess = async (details) => {
       });
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       // Validate form data
       const validatedData = problemSchema.parse(formData);
 
       const finalSector =
-  formData.sector === "Other"
-    ? formData.customSector
-    : formData.sector;
+        formData.sector === "Other" ? formData.customSector : formData.sector;
 
-
-      const { error } = await supabase.from("problems").insert([{
-        title: validatedData.title.trim(),
-        description: validatedData.description.trim(),
-        sector: finalSector.toLowerCase() as any,
-        location: validatedData.location.trim(),
-        affected_population: validatedData.target_audience.trim(),
-        image_url: validatedData.image_url || null,
-        submitter_id: user?.id,
-        status: 'pending' as any,
-        open_to_collaborate: true,
-      }]);
+      const { error } = await supabase.from("problems").insert([
+        {
+          title: validatedData.title.trim(),
+          description: validatedData.description.trim(),
+          sector: finalSector.toLowerCase() as any,
+          location: validatedData.location.trim(),
+          affected_population: validatedData.target_audience.trim(),
+          image_url: validatedData.image_url || null,
+          submitter_id: user?.id,
+          status: "pending" as any,
+          open_to_collaborate: true,
+        },
+      ]);
 
       if (error) throw error;
 
       toast({
         title: "Problem submitted successfully! 🎉",
-        description: "Your submission has been sent for review. You'll receive an update once approved.",
+        description:
+          "Your submission has been sent for review. You'll receive an update once approved.",
       });
-      
+
       navigate("/dashboard");
     } catch (error: any) {
       if (error instanceof z.ZodError) {
