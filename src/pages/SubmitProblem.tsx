@@ -187,15 +187,15 @@ const handlePaymentSuccess = async (details) => {
     showPayment && <PayPalModal onSuccess={handlePaymentSuccess} />;
   }
 
-  useEffect(() => {
-    if (!hasPaid && user) {
-      toast({
-        title: "Payment required",
-        description: "You must pay before submitting",
-        variant: "destructive",
-      });
-    }
-  }, [hasPaid, user, toast]);
+  // useEffect(() => {
+  //   if (!hasPaid && user) {
+  //     toast({
+  //       title: "Payment required ",
+  //       description: "You must pay before submitting",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // }, [hasPaid, user, toast]);
 
   return (
     <ProtectedRoute>
@@ -665,6 +665,7 @@ const handlePaymentSuccess = async (details) => {
 
                         if (!hasPaid) {
                           setShowPayment(true); // 💳 show PayPal
+                          return;
                         } else {
                           handleSubmit(); // already paid
                         }
