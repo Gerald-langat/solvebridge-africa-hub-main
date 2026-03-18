@@ -183,9 +183,6 @@ const handlePaymentSuccess = async (details) => {
   const nextStep = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
-  {
-    showPayment && <PayPalModal onSuccess={handlePaymentSuccess} />;
-  }
 
   // useEffect(() => {
   //   if (!hasPaid && user) {
@@ -200,487 +197,486 @@ const handlePaymentSuccess = async (details) => {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-          <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground">
-                Submit a Problem
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                Help us understand the challenge you're facing
-              </p>
+        <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">
+              Submit a Problem
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Help us understand the challenge you're facing
+            </p>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm font-medium mb-2 flex-wrap gap-2">
+              {STEPS.map((s, i) => (
+                <span
+                  key={s}
+                  className={`${i <= step ? "text-primary" : "text-muted-foreground"} flex items-center`}
+                >
+                  {i < step ? (
+                    <CheckCircle className="inline h-4 w-4 mr-1" />
+                  ) : (
+                    <span className="mr-1">{i + 1}.</span>
+                  )}
+                  <span className="hidden md:inline">{s}</span>
+                  <span className="md:hidden">Step {i + 1}</span>
+                </span>
+              ))}
             </div>
+            <Progress
+              value={(step / (STEPS.length - 1)) * 100}
+              className="h-2"
+            />
+          </div>
 
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium mb-2 flex-wrap gap-2">
-                {STEPS.map((s, i) => (
-                  <span
-                    key={s}
-                    className={`${i <= step ? "text-primary" : "text-muted-foreground"} flex items-center`}
-                  >
-                    {i < step ? (
-                      <CheckCircle className="inline h-4 w-4 mr-1" />
-                    ) : (
-                      <span className="mr-1">{i + 1}.</span>
-                    )}
-                    <span className="hidden md:inline">{s}</span>
-                    <span className="md:hidden">Step {i + 1}</span>
-                  </span>
-                ))}
-              </div>
-              <Progress
-                value={(step / (STEPS.length - 1)) * 100}
-                className="h-2"
-              />
-            </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>{STEPS[step]}</CardTitle>
+              <CardDescription>
+                {step === 0 &&
+                  "Describe the challenge you're facing — be as specific as possible"}
+                {step === 1 &&
+                  "Help us understand who is affected and the scale of impact"}
+                {step === 2 && "Review your details before submission"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {step === 0 && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Problem Title *</Label>
+                    <Input
+                      id="title"
+                      placeholder="Give your problem a short title"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>{STEPS[step]}</CardTitle>
-                <CardDescription>
-                  {step === 0 &&
-                    "Describe the challenge you're facing — be as specific as possible"}
-                  {step === 1 &&
-                    "Help us understand who is affected and the scale of impact"}
-                  {step === 2 && "Review your details before submission"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {step === 0 && (
-                  <>
+                  <div className="space-y-2">
+                    <Label htmlFor="summary">Problem Summary *</Label>
+                    <Textarea
+                      id="summary"
+                      placeholder="Brief summary of the challenge (max 200 characters)"
+                      rows={2}
+                      maxLength={200}
+                      value={formData.summary}
+                      onChange={(e) =>
+                        setFormData({ ...formData, summary: e.target.value })
+                      }
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground text-right">
+                      {formData.summary.length}/200 characters
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Detailed Description *</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Describe the challenge in detail (max 800 characters)"
+                      rows={6}
+                      maxLength={800}
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground text-right">
+                      {formData.description.length}/800 characters
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="title">Problem Title *</Label>
-                      <Input
-                        id="title"
-                        placeholder="Give your problem a short title"
-                        value={formData.title}
-                        onChange={(e) =>
-                          setFormData({ ...formData, title: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
+                      <Label htmlFor="sector">Category *</Label>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="summary">Problem Summary *</Label>
-                      <Textarea
-                        id="summary"
-                        placeholder="Brief summary of the challenge (max 200 characters)"
-                        rows={2}
-                        maxLength={200}
-                        value={formData.summary}
-                        onChange={(e) =>
-                          setFormData({ ...formData, summary: e.target.value })
-                        }
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground text-right">
-                        {formData.summary.length}/200 characters
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="description">
-                        Detailed Description *
-                      </Label>
-                      <Textarea
-                        id="description"
-                        placeholder="Describe the challenge in detail (max 800 characters)"
-                        rows={6}
-                        maxLength={800}
-                        value={formData.description}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            description: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground text-right">
-                        {formData.description.length}/800 characters
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="sector">Category *</Label>
-
-                        <Select
-                          value={formData.sector}
-                          onValueChange={(value) =>
-                            setFormData({ ...formData, sector: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-
-                          <SelectContent>
-                            {CATEGORIES.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {formData.sector === "Other" && (
-                        <div className="space-y-2">
-                          <Label htmlFor="customSector">Enter category *</Label>
-                          <Input
-                            id="customSector"
-                            placeholder="Enter custom category"
-                            value={formData.customSector}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                customSector: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label htmlFor="location">
-                          Location (Country + City) *
-                        </Label>
-                        <Input
-                          id="location"
-                          placeholder="e.g., Kenya, Nairobi"
-                          value={formData.location}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              location: e.target.value,
-                            })
-                          }
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Upload Supporting Image (Optional)</Label>
-
-                      {/* Hidden file input */}
-                      <input
-                        type="file"
-                        id="imageFile"
-                        accept="image/*"
-                        hidden
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-
-                          try {
-                            toast({ title: "Uploading image..." });
-
-                            const url = await uploadImage(file);
-                            setFormData({ ...formData, image_url: url });
-
-                            toast({ title: "Image uploaded successfully ✅" });
-                          } catch (err: any) {
-                            toast({
-                              title: "Upload failed",
-                              description: err.message,
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                      />
-
-                      <div className="flex items-center gap-2">
-                        {/* URL input optional */}
-                        <Input
-                          placeholder="Or paste image URL"
-                          value={formData.image_url}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              image_url: e.target.value,
-                            })
-                          }
-                        />
-
-                        {/* Upload icon */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            document.getElementById("imageFile")?.click()
-                          }
-                          className="p-2 border rounded-md hover:bg-muted cursor-pointer"
-                        >
-                          <Upload className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                      </div>
-
-                      {/* Preview */}
-                      {formData.image_url && (
-                        <img
-                          src={formData.image_url}
-                          alt="Preview"
-                          className="mt-2 rounded-lg max-h-48 object-cover border"
-                        />
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {step === 1 && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="target_audience">Target Audience *</Label>
-                      <Textarea
-                        id="target_audience"
-                        placeholder="Who does this problem affect? (e.g., local farmers, youth, students)"
-                        rows={3}
-                        value={formData.target_audience}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            target_audience: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="impact_scale">
-                        Estimated Impact Scale *
-                      </Label>
                       <Select
-                        value={formData.impact_scale}
+                        value={formData.sector}
                         onValueChange={(value) =>
-                          setFormData({ ...formData, impact_scale: value })
+                          setFormData({ ...formData, sector: value })
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select impact scale" />
+                          <SelectValue placeholder="Select category" />
                         </SelectTrigger>
+
                         <SelectContent>
-                          {IMPACT_SCALES.map((scale) => (
-                            <SelectItem key={scale} value={scale}>
-                              {scale}
+                          {CATEGORIES.map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-
+                    {formData.sector === "Other" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="customSector">Enter category *</Label>
+                        <Input
+                          id="customSector"
+                          placeholder="Enter custom category"
+                          value={formData.customSector}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              customSector: e.target.value,
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                    )}
                     <div className="space-y-2">
-                      <Label htmlFor="stakeholders">Key Stakeholders</Label>
-                      <Textarea
-                        id="stakeholders"
-                        placeholder="List key stakeholders involved or affected (e.g., government agencies, NGOs, community leaders)"
-                        rows={3}
-                        value={formData.stakeholders}
+                      <Label htmlFor="location">
+                        Location (Country + City) *
+                      </Label>
+                      <Input
+                        id="location"
+                        placeholder="e.g., Kenya, Nairobi"
+                        value={formData.location}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            stakeholders: e.target.value,
+                            location: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Upload Supporting Image (Optional)</Label>
+
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      id="imageFile"
+                      accept="image/*"
+                      hidden
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        try {
+                          toast({ title: "Uploading image..." });
+
+                          const url = await uploadImage(file);
+                          setFormData({ ...formData, image_url: url });
+
+                          toast({ title: "Image uploaded successfully ✅" });
+                        } catch (err: any) {
+                          toast({
+                            title: "Upload failed",
+                            description: err.message,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    />
+
+                    <div className="flex items-center gap-2">
+                      {/* URL input optional */}
+                      <Input
+                        placeholder="Or paste image URL"
+                        value={formData.image_url}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            image_url: e.target.value,
                           })
                         }
                       />
+
+                      {/* Upload icon */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          document.getElementById("imageFile")?.click()
+                        }
+                        className="p-2 border rounded-md hover:bg-muted cursor-pointer"
+                      >
+                        <Upload className="h-4 w-4 text-muted-foreground" />
+                      </button>
                     </div>
 
-                    {/* SolveAI Suggestion Panel */}
-                    <Card className="bg-primary/5 border-primary/20">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-3">
-                          <MessageSquare className="h-5 w-5 text-primary mt-1" />
-                          <div className="flex-1">
-                            <h4 className="font-semibold mb-1">
-                              Need help framing your problem?
-                            </h4>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              Ask SolveAI for improvement suggestions on your
-                              submission.
-                            </p>
-                            <Button variant="outline" size="sm" type="button">
-                              <MessageSquare className="h-4 w-4 mr-2" />
-                              Open SolveAI Chat
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </>
-                )}
+                    {/* Preview */}
+                    {formData.image_url && (
+                      <img
+                        src={formData.image_url}
+                        alt="Preview"
+                        className="mt-2 rounded-lg max-h-48 object-cover border"
+                      />
+                    )}
+                  </div>
+                </>
+              )}
 
-                {step === 2 && (
-                  <>
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">
-                        Verify Your Details Before Submission
-                      </h3>
+              {step === 1 && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="target_audience">Target Audience *</Label>
+                    <Textarea
+                      id="target_audience"
+                      placeholder="Who does this problem affect? (e.g., local farmers, youth, students)"
+                      rows={3}
+                      value={formData.target_audience}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          target_audience: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
 
-                      <div className="space-y-3">
-                        <div className="p-4 bg-muted rounded-lg">
-                          <h4 className="font-semibold text-sm mb-1">
-                            Problem Title
-                          </h4>
-                          <p className="text-sm">
-                            {formData.title || "Not provided"}
-                          </p>
-                        </div>
-
-                        <div className="p-4 bg-muted rounded-lg">
-                          <h4 className="font-semibold text-sm mb-1">
-                            Summary
-                          </h4>
-                          <p className="text-sm">
-                            {formData.summary || "Not provided"}
-                          </p>
-                        </div>
-
-                        <div className="p-4 bg-muted rounded-lg">
-                          <h4 className="font-semibold text-sm mb-1">
-                            Description
-                          </h4>
-                          <p className="text-sm">
-                            {formData.description || "Not provided"}
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <div className="p-4 bg-muted rounded-lg">
-                            <h4 className="font-semibold text-sm mb-1">
-                              Category
-                            </h4>
-                            <p className="text-sm">
-                              {formData.sector || "Not provided"}
-                            </p>
-                          </div>
-                          <div className="p-4 bg-muted rounded-lg">
-                            <h4 className="font-semibold text-sm mb-1">
-                              Location
-                            </h4>
-                            <p className="text-sm">
-                              {formData.location || "Not provided"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="p-4 bg-muted rounded-lg">
-                          <h4 className="font-semibold text-sm mb-1">
-                            Target Audience
-                          </h4>
-                          <p className="text-sm">
-                            {formData.target_audience || "Not provided"}
-                          </p>
-                        </div>
-
-                        <div className="p-4 bg-muted rounded-lg">
-                          <h4 className="font-semibold text-sm mb-1">
-                            Impact Scale
-                          </h4>
-                          <p className="text-sm">
-                            {formData.impact_scale || "Not provided"}
-                          </p>
-                        </div>
-
-                        {formData.stakeholders && (
-                          <div className="p-4 bg-muted rounded-lg">
-                            <h4 className="font-semibold text-sm mb-1">
-                              Key Stakeholders
-                            </h4>
-                            <p className="text-sm">{formData.stakeholders}</p>
-                          </div>
-                        )}
-
-                        {formData.image_url && (
-                          <div className="p-4 bg-muted rounded-lg">
-                            <h4 className="font-semibold text-sm mb-1">
-                              Supporting Image
-                            </h4>
-                            <img
-                              src={formData.image_url}
-                              alt="Problem"
-                              className="mt-2 rounded-lg max-h-48 object-cover"
-                            />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                        <Checkbox
-                          id="confirm"
-                          checked={confirmed}
-                          onCheckedChange={(checked) =>
-                            setConfirmed(checked as boolean)
-                          }
-                        />
-                        <Label
-                          htmlFor="confirm"
-                          className="cursor-pointer text-sm leading-relaxed"
-                        >
-                          I confirm this information is accurate and I have the
-                          right to share it
-                        </Label>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                <div className="flex justify-between pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={prevStep}
-                    disabled={step === 0 || isSubmitting}
-                  >
-                    ← Back
-                  </Button>
-
-                  {step < STEPS.length - 1 ? (
-                    <Button
-                      onClick={nextStep}
-                      disabled={
-                        (step === 0 &&
-                          (!formData.title ||
-                            !formData.summary ||
-                            !formData.description ||
-                            !formData.sector ||
-                            !formData.location)) ||
-                        (step === 1 &&
-                          (!formData.target_audience || !formData.impact_scale))
+                  <div className="space-y-2">
+                    <Label htmlFor="impact_scale">
+                      Estimated Impact Scale *
+                    </Label>
+                    <Select
+                      value={formData.impact_scale}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, impact_scale: value })
                       }
                     >
-                      Next → {step === 0 ? "Impact Details" : "Verification"}
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        if (!confirmed) {
-                          toast({
-                            title: "Confirmation required",
-                            description:
-                              "Please confirm the accuracy of your information",
-                            variant: "destructive",
-                          });
-                          return;
-                        }
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select impact scale" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {IMPACT_SCALES.map((scale) => (
+                          <SelectItem key={scale} value={scale}>
+                            {scale}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                        if (!hasPaid) {
-                          setShowPayment(true); // 💳 show PayPal
-                          return;
-                        } else {
-                          handleSubmit(); // already paid
+                  <div className="space-y-2">
+                    <Label htmlFor="stakeholders">Key Stakeholders</Label>
+                    <Textarea
+                      id="stakeholders"
+                      placeholder="List key stakeholders involved or affected (e.g., government agencies, NGOs, community leaders)"
+                      rows={3}
+                      value={formData.stakeholders}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          stakeholders: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  {/* SolveAI Suggestion Panel */}
+                  <Card className="bg-primary/5 border-primary/20">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-3">
+                        <MessageSquare className="h-5 w-5 text-primary mt-1" />
+                        <div className="flex-1">
+                          <h4 className="font-semibold mb-1">
+                            Need help framing your problem?
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            Ask SolveAI for improvement suggestions on your
+                            submission.
+                          </p>
+                          <Button variant="outline" size="sm" type="button">
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Open SolveAI Chat
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">
+                      Verify Your Details Before Submission
+                    </h3>
+
+                    <div className="space-y-3">
+                      <div className="p-4 bg-muted rounded-lg">
+                        <h4 className="font-semibold text-sm mb-1">
+                          Problem Title
+                        </h4>
+                        <p className="text-sm">
+                          {formData.title || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="p-4 bg-muted rounded-lg">
+                        <h4 className="font-semibold text-sm mb-1">Summary</h4>
+                        <p className="text-sm">
+                          {formData.summary || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="p-4 bg-muted rounded-lg">
+                        <h4 className="font-semibold text-sm mb-1">
+                          Description
+                        </h4>
+                        <p className="text-sm">
+                          {formData.description || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="p-4 bg-muted rounded-lg">
+                          <h4 className="font-semibold text-sm mb-1">
+                            Category
+                          </h4>
+                          <p className="text-sm">
+                            {formData.sector || "Not provided"}
+                          </p>
+                        </div>
+                        <div className="p-4 bg-muted rounded-lg">
+                          <h4 className="font-semibold text-sm mb-1">
+                            Location
+                          </h4>
+                          <p className="text-sm">
+                            {formData.location || "Not provided"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-4 bg-muted rounded-lg">
+                        <h4 className="font-semibold text-sm mb-1">
+                          Target Audience
+                        </h4>
+                        <p className="text-sm">
+                          {formData.target_audience || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="p-4 bg-muted rounded-lg">
+                        <h4 className="font-semibold text-sm mb-1">
+                          Impact Scale
+                        </h4>
+                        <p className="text-sm">
+                          {formData.impact_scale || "Not provided"}
+                        </p>
+                      </div>
+
+                      {formData.stakeholders && (
+                        <div className="p-4 bg-muted rounded-lg">
+                          <h4 className="font-semibold text-sm mb-1">
+                            Key Stakeholders
+                          </h4>
+                          <p className="text-sm">{formData.stakeholders}</p>
+                        </div>
+                      )}
+
+                      {formData.image_url && (
+                        <div className="p-4 bg-muted rounded-lg">
+                          <h4 className="font-semibold text-sm mb-1">
+                            Supporting Image
+                          </h4>
+                          <img
+                            src={formData.image_url}
+                            alt="Problem"
+                            className="mt-2 rounded-lg max-h-48 object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                      <Checkbox
+                        id="confirm"
+                        checked={confirmed}
+                        onCheckedChange={(checked) =>
+                          setConfirmed(checked as boolean)
                         }
-                      }}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting
-                        ? "Submitting..."
-                        : "Submit Problem for Review"}
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                      />
+                      <Label
+                        htmlFor="confirm"
+                        className="cursor-pointer text-sm leading-relaxed"
+                      >
+                        I confirm this information is accurate and I have the
+                        right to share it
+                      </Label>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-between pt-4">
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={step === 0 || isSubmitting}
+                >
+                  ← Back
+                </Button>
+
+                {step < STEPS.length - 1 ? (
+                  <Button
+                    onClick={nextStep}
+                    disabled={
+                      (step === 0 &&
+                        (!formData.title ||
+                          !formData.summary ||
+                          !formData.description ||
+                          !formData.sector ||
+                          !formData.location)) ||
+                      (step === 1 &&
+                        (!formData.target_audience || !formData.impact_scale))
+                    }
+                  >
+                    Next → {step === 0 ? "Impact Details" : "Verification"}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      if (!confirmed) {
+                        toast({
+                          title: "Confirmation required",
+                          description:
+                            "Please confirm the accuracy of your information",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+
+                      if (!hasPaid) {
+                        setShowPayment(true); // 💳 show PayPal
+                        return;
+                      } else {
+                        handleSubmit(); // already paid
+                      }
+                    }}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? "Submitting..."
+                      : "Submit Problem for Review"}
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* PayPal Modal */}
+        {showPayment && <PayPalModal onSuccess={handlePaymentSuccess} />}
       </DashboardLayout>
     </ProtectedRoute>
   );
