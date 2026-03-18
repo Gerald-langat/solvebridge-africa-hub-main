@@ -2,8 +2,12 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 
 export default function PayPalModal({ onSuccess }) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl w-[400px]">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      {/* Overlay with blur and semi-transparent background */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+      {/* Modal content */}
+      <div className="relative bg-white p-6 rounded-xl w-[400px] z-10">
         <h2 className="text-lg font-bold mb-4">Complete Payment ($25)</h2>
 
         <PayPalButtons
